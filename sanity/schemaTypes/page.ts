@@ -34,6 +34,7 @@ export const page = defineType({
     }),
     defineField({ name: 'title', title: 'Page title (browser tab / Google)', type: 'string', group: 'seo', validation: (r) => r.required() }),
     defineField({ name: 'metaDescription', title: 'Google description', type: 'text', rows: 3, group: 'seo' }),
+    defineField({ name: 'keywords', title: 'Keywords', type: 'array', of: [defineArrayMember({ type: 'string' })], options: { layout: 'tags' }, group: 'seo', description: 'Main search phrases for this page, e.g. "acne treatment in Noida". The first one is the most important.' }),
     defineField({ name: 'shareImage', title: 'Share image (optional)', type: 'picture', group: 'seo', description: 'Shown when this page is shared. Leave empty to use the one in Site Settings.' }),
     defineField({ name: 'noindex', title: 'Hide from Google', type: 'boolean', group: 'seo', initialValue: false }),
     defineField({

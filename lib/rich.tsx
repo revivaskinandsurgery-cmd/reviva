@@ -18,7 +18,9 @@ export type Block = {
   markDefs?: MarkDef[];
   children?: (Span | { _type: string; _key: string; html?: string })[];
 };
-export type Figure = Picture & { _type: 'figure'; _key: string; className?: string };
+export type Figure = Picture & { _type: 'figure'; _key: string; className?: string; caption?: string };
+export type RichTable = { _type: 'richTable'; _key: string; hasHeader?: boolean; rows?: { _key: string; cells?: string[] }[] };
+export type FaqList = { _type: 'postFaqList'; _key: string; items?: { _key: string; question?: string; answer?: string }[] };
 export type RichValue = (Block | Figure | { _type: string; _key: string })[];
 
 // "highlight" = the gold word style (a plain <span>, coloured by the site's
@@ -85,15 +87,68 @@ export function Inline({ block, marks }: { block: Pick<Block, 'children' | 'mark
   return <>{render(spans, 0, 'k')}</>;
 }
 
+const blockText = (b: Block) => (b.children ?? []).map((c) => (c as Span).text ?? '').join('').trim();
+
+/** Address of every h2 / h3 ("Who this guide is for" -> "who-this-guide-is-for"), by block key. */
+export function headingIds(value?: RichValue): Map<string, string> {
+  const used = new Set<string>();
+  const ids = new Map<string, string>();
+  for (const b of value ?? []) {
+    const block = b as Block;
+    if (block._type !== 'block' || (block.style !== 'h2' && block.style !== 'h3')) continue;
+    const base = blockText(block).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'section';
+    let id = base;
+    for (let n = 2; used.has(id); n++) id = `${base}-${n}`;
+    used.add(id);
+    ids.set(block._key, id);
+  }
+  return ids;
+}
+
+/** The article's h2 headings, for an "On this page" list. */
+export function outline(value?: RichValue): { id: string; text: string }[] {
+  const ids = headingIds(value);
+  return (value ?? []).flatMap((b) => ((b as Block).style === 'h2' && ids.has(b._key) ? [{ id: ids.get(b._key)!, text: blockText(b as Block) }] : []));
+}
+
 /** A whole rich-text body: paragraphs, headings, lists, figures. */
 export function Rich({ value }: { value?: RichValue }) {
   const blocks = value ?? [];
+  const ids = headingIds(blocks);
   const out: ReactNode[] = [];
   for (let i = 0; i < blocks.length; i++) {
     const b = blocks[i];
     if (b._type === 'figure') {
       const f = b as Figure;
-      out.push(<img key={f._key} src={pictureSrc(f)} alt={f.alt ?? ''} className={f.className} />);
+      const img = <img key={f._key} src={pictureSrc(f)} alt={f.alt ?? ''} className={f.className} />;
+      out.push(f.caption ? <figure key={f._key}>{img}<figcaption>{f.caption}</figcaption></figure> : img);
+      continue;
+    }
+    if (b._type === 'richTable') {
+      const t = b as RichTable;
+      const [head, ...rest] = t.rows ?? [];
+      const row = (r: { _key: string; cells?: string[] }, cell: 'th' | 'td') => <tr key={r._key}>{(r.cells ?? []).map((c, j) => createElement(cell, { key: j }, c))}</tr>;
+      out.push(
+        <div className="table-scroll" key={t._key} style={{ overflowX: 'auto' }}>
+          <table>
+            {t.hasHeader !== false && head ? <thead>{row(head, 'th')}</thead> : null}
+            <tbody>{(t.hasHeader !== false ? rest : t.rows ?? []).map((r) => row(r, 'td'))}</tbody>
+          </table>
+        </div>,
+      );
+      continue;
+    }
+    if (b._type === 'postFaqList') {
+      out.push(
+        <div className="post-faq" key={b._key}>
+          {((b as FaqList).items ?? []).map((it) => (
+            <details key={it._key}>
+              <summary>{it.question}</summary>
+              <p>{it.answer}</p>
+            </details>
+          ))}
+        </div>,
+      );
       continue;
     }
     if (b._type !== 'block') continue;
@@ -129,7 +184,7 @@ export function Rich({ value }: { value?: RichValue }) {
       continue;
     }
     const { tag, className } = STYLE_TAG[block.style ?? 'normal'] ?? STYLE_TAG.normal;
-    out.push(createElement(tag, { key: block._key, className }, <Inline block={block} />));
+    out.push(createElement(tag, { key: block._key, className, id: ids.get(block._key) }, <Inline block={block} />));
   }
   return <>{out}</>;
 }

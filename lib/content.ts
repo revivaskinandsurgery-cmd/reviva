@@ -11,14 +11,18 @@ import type { Post, PostCard } from '@/components/blog';
 
 const FETCH_OPTS = { cache: 'no-store' as const };
 
-const META = `_id, title, metaDescription, noindex, shareImage, bodyClass`;
+const META = `_id, _updatedAt, title, metaDescription, keywords, noindex, shareImage, bodyClass`;
 const PAGE_QUERY = defineQuery(`*[_type == "page" && path == $path][0]{
   ${META}, path, name, blocks, whatsapp }`);
-const POST_FIELDS = `title, "path": "/blog/" + slug.current, publishedAt, readMinutes, excerpt, cover`;
+const POST_FIELDS = `title, "path": "/blog/" + slug.current, publishedAt, "readMinutes": coalesce(readMinutes, math::max([1, round(length(pt::text(body)) / 1200)])), excerpt, cover`;
+const CATEGORY = `"categories": categories[]->{ title, "slug": slug.current }`;
 const POST_QUERY = defineQuery(`*[_type == "post" && slug.current == $slug][0]{
-  ${META}, ${POST_FIELDS}, author, body, design, seoTitle }`);
-const CARDS_QUERY = defineQuery(`*[_type == "post" && defined(slug.current) && defined(publishedAt)] | order(publishedAt desc, _createdAt desc){ ${POST_FIELDS} }`);
-const PATHS_QUERY = defineQuery(`[...*[_type == "page" && defined(path)].path, ...*[_type == "post" && defined(slug.current)]{"p": "/blog/" + slug.current}.p]`);
+  ${META}, ${POST_FIELDS}, author, reviewedBy, body, design, seoTitle, "keywords": tags, ${CATEGORY} }`);
+const CARDS_QUERY = defineQuery(`*[_type == "post" && defined(slug.current) && defined(publishedAt) && hideFromBlog != true] | order(publishedAt desc, _createdAt desc){ _id, ${POST_FIELDS}, "categorySlugs": categories[]->slug.current, "categoryIds": categories[]._ref }`);
+const SITEMAP_QUERY = defineQuery(`[
+  ...*[_type == "page" && defined(path) && noindex != true]{ "path": path, "updatedAt": _updatedAt },
+  ...*[_type == "post" && defined(slug.current) && noindex != true && hideFromBlog != true]{ "path": "/blog/" + slug.current, "updatedAt": _updatedAt }
+]`);
 const REDIRECT_QUERY = defineQuery(`*[_type == "redirect" && source in $paths][0].destination`);
 const SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0]{..., "logoImageUrl": logoImage.asset->url}`);
 const LANDING_QUERY = defineQuery(`*[_type == "landingPage" && slug.current == $slug][0]{ title, seoTitle, metaDescription, gtmId, design, sections }`);
@@ -68,7 +72,7 @@ export const getPostCards = cache(async (): Promise<PostCard[]> => client.fetch<
 export const getDoc = cache(async (urlPath: string) => {
   const post = await getPost(urlPath);
   // headTitle: the browser-tab / Google title (a post's SEO title, else its title).
-  if (post) return { kind: 'post' as const, ...post, headTitle: post.seoTitle || post.title };
+  if (post) return { kind: 'post' as const, ...post, metaDescription: post.metaDescription || post.excerpt, headTitle: post.seoTitle || post.title };
   const page = await getPage(urlPath);
   return page ? { kind: 'page' as const, ...page, headTitle: page.title } : null;
 });
@@ -80,8 +84,9 @@ export async function getRedirect(urlPath: string): Promise<string | null> {
   return client.fetch<string | null>(REDIRECT_QUERY, { paths: [p, `${p}.html`, `${p}/index.html`] }, FETCH_OPTS);
 }
 
-export async function getAllPaths(): Promise<string[]> {
-  return client.fetch<string[]>(PATHS_QUERY, {}, FETCH_OPTS);
+/** Every address for the sitemap, with its last edit. */
+export async function getSitemapEntries(): Promise<{ path: string; updatedAt: string }[]> {
+  return client.fetch<{ path: string; updatedAt: string }[]>(SITEMAP_QUERY, {}, FETCH_OPTS);
 }
 
 /* Shapes only (no content): an empty field in Site Settings shows nothing

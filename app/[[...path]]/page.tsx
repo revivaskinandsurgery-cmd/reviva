@@ -19,6 +19,10 @@ export default async function SitePage({ params }: PageProps<'/[[...path]]'>) {
   if (doc.kind === 'post') {
     const cards = await getPostCards();
     const i = cards.findIndex((c) => c.path === doc.path);
+    // Same-topic articles first, topped up with the newest.
+    const topics = new Set(doc.categories?.map((c) => c.slug));
+    const others = cards.filter((c) => c.path !== doc.path);
+    const related = [...others.filter((c) => c.categorySlugs?.some((x) => topics.has(x))), ...others].filter((c, n, all) => all.indexOf(c) === n).slice(0, 3);
     return (
       <div id="main" tabIndex={-1}>
         <div className="rv-scrim"></div>
@@ -28,12 +32,13 @@ export default async function SitePage({ params }: PageProps<'/[[...path]]'>) {
           latest={cards.filter((c) => c.path !== doc.path).slice(0, 5)}
           prev={i >= 0 ? cards[i + 1] : undefined}
           next={i > 0 ? cards[i - 1] : undefined}
+          related={related}
         />
       </div>
     );
   }
 
-  const posts = doc.blocks?.some((b) => b._type === 'postGrid') ? await getPostCards() : [];
+  const posts = doc.blocks?.some((b) => b._type === 'postGrid' || b._type === 'relatedPosts') ? await getPostCards() : [];
   return (
     <div id="main" tabIndex={-1}>
       <div className="rv-scrim"></div>

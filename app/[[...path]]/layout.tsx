@@ -6,6 +6,9 @@ import Footer from '@/components/Footer';
 import { SiteScript } from '@/components/SiteScript';
 import { getDoc, getRedirect, getSettings, toUrlPath } from '@/lib/content';
 import { absoluteImage } from '@/lib/image';
+import { blogPosting, breadcrumbs, faqPage, plainText, service, siteGraph } from '@/lib/seo';
+import type { FaqList } from '@/lib/rich';
+import type { FaqBlock } from '@/components/blocks/treatment';
 
 /* Root layout for every public page: the site-wide <head> (fonts,
    stylesheets, Google Analytics / Tag Manager from Site Settings) and the
@@ -29,30 +32,46 @@ const STYLESHEETS = [
   `/assets/css/gallery.css?v=${SCRIPT_VERSION}`,
 ];
 
+/** "Acne Treatment in Noida | Reviva" -> "Acne Treatment in Noida". */
+const shortName = (t: string) => t.split(' | ')[0].split(' – ')[0];
+
 export async function generateMetadata({ params }: LayoutProps<'/[[...path]]'>): Promise<Metadata> {
   const { path } = await params;
   const urlPath = toUrlPath(path);
   const [doc, s] = await Promise.all([getDoc(urlPath), getSettings()]);
   if (!doc) return {};
-  const site = s.siteUrl.replace(/\/+$/, '');
+  const site = s.siteUrl.replace(/[/]+$/, '');
   const url = site + (urlPath === '/' ? '/' : urlPath);
-  const image = absoluteImage(doc.shareImage, site) ?? absoluteImage(s.shareImage, site);
-  const imageAlt = s.clinicName;
+  const post = doc.kind === 'post' ? doc : null;
+  // A post is shared with its own cover picture unless it has a share image.
+  const image = absoluteImage(doc.shareImage, site) ?? absoluteImage(post?.cover, site) ?? absoluteImage(s.shareImage, site);
+  const imageAlt = post?.cover?.alt || doc.title || s.clinicName;
   return {
     metadataBase: new URL(site),
     title: doc.headTitle,
     description: doc.metaDescription || undefined,
+    keywords: doc.keywords?.length ? doc.keywords : undefined,
+    authors: [{ name: s.clinicName, url: site }],
+    publisher: s.clinicName,
     alternates: { canonical: url },
-    robots: { index: !doc.noindex, follow: true },
+    robots: {
+      index: !doc.noindex,
+      follow: true,
+      googleBot: { index: !doc.noindex, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 },
+    },
     verification: s.googleVerification ? { google: s.googleVerification } : undefined,
     icons: { icon: [{ url: '/assets/images/favicon.webp', type: 'image/webp' }] },
     openGraph: {
-      type: doc.kind === 'post' ? 'article' : 'website',
+      type: post ? 'article' : 'website',
+      locale: 'en_IN',
       siteName: s.clinicName,
       title: doc.headTitle,
       description: doc.metaDescription || undefined,
       url,
       images: image ? [{ url: image, alt: imageAlt }] : undefined,
+      ...(post
+        ? { publishedTime: post.publishedAt, modifiedTime: post._updatedAt, authors: [s.clinicName], section: post.categories?.[0]?.title, tags: post.keywords }
+        : {}),
     },
     twitter: { card: 'summary_large_image', title: doc.headTitle, description: doc.metaDescription || undefined, images: image ? [image] : undefined },
   };
@@ -67,20 +86,36 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[[.
     if (to) permanentRedirect(to);
     notFound();
   }
-  const site = s.siteUrl.replace(/\/+$/, '');
+  const site = s.siteUrl.replace(/[/]+$/, '');
+  const url = site + (urlPath === '/' ? '/' : urlPath);
 
-  // The clinic, for Google (built from Site Settings).
-  const clinic = {
-    '@context': 'https://schema.org',
-    '@type': 'MedicalClinic',
-    name: s.clinicName,
-    url: site + (urlPath === '/' ? '/' : urlPath),
-    image: absoluteImage(s.shareImage, site),
-    telephone: s.locations.map((l) => l.phoneDisplay),
-    email: s.email,
-    address: s.locations[0] ? { '@type': 'PostalAddress', streetAddress: s.locations[0].address, addressCountry: 'IN' } : undefined,
-    openingHours: s.hours,
-  };
+  // Structured data for Google: the clinics + website on every page, then what this page is.
+  const jsonLd: (object | null)[] = [...siteGraph(s, site, absoluteImage({ src: s.logo }, site))];
+  if (page.kind === 'post') {
+    const body = page.body ?? [];
+    const faqs = body.filter((b): b is FaqList => b._type === 'postFaqList').flatMap((f) => f.items ?? []);
+    const words = plainText(body).split(' ').length;
+    jsonLd.push(
+      breadcrumbs(site, [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blogs' }, { name: page.title, path: urlPath }]),
+      blogPosting(s, site, {
+        url,
+        title: page.title,
+        description: page.metaDescription || page.excerpt,
+        image: absoluteImage(page.shareImage, site) ?? absoluteImage(page.cover, site),
+        published: page.publishedAt,
+        modified: page._updatedAt,
+        keywords: page.keywords,
+        section: page.categories?.[0]?.title,
+        words,
+      }),
+      faqPage(faqs),
+    );
+  } else if (urlPath !== '/') {
+    const blocks = page.blocks ?? [];
+    const faqs = blocks.filter((b) => b._type === 'faq').flatMap((b) => ((b as unknown as FaqBlock).items ?? []).map((i) => ({ question: i.question, answer: plainText(i.answer) })));
+    jsonLd.push(breadcrumbs(site, [{ name: 'Home', path: '/' }, { name: shortName(page.title), path: urlPath }]), faqPage(faqs));
+    if (blocks.some((b) => b._type === 'serviceHero')) jsonLd.push(service(s, site, { url, name: shortName(page.title), description: page.metaDescription }));
+  }
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -88,7 +123,9 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[[.
         {STYLESHEETS.map((href) => (
           <link rel="stylesheet" href={href} key={href} />
         ))}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(clinic) }} />
+        {jsonLd.filter(Boolean).map((data, i) => (
+          <script type="application/ld+json" key={i} dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, String.raw`<`) }} />
+        ))}
       </head>
       <body className={page.bodyClass || undefined} suppressHydrationWarning>
         {s.gtmId ? (

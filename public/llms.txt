@@ -1,65 +1,41 @@
 # Reviva Skin & Surgery Clinic
 
+> Dermatologist-led skin, hair, laser and aesthetic clinic with two locations in Delhi NCR: Sector 76, Noida (Amrapali Silicon City) and Raj Nagar Extension, Ghaziabad (Quantum Homes). Led by Dr. Aarushi Tyagi.
+
 Website: https://revivaskinandsurgery.com/
 
-Description:
-Reviva Skin & Surgery Clinic is a premium dermatology, cosmetology, laser and aesthetic surgery clinic based in Ghaziabad, Delhi NCR, India. The clinic provides advanced skin, hair, laser and anti-ageing treatments.
+## Clinics
+- [Noida clinic](https://revivaskinandsurgery.com/noida): Amrapali Silicon City, Gate No. 4, Sector 76, Noida. Phone +91 85958 56844
+- [Ghaziabad clinic](https://revivaskinandsurgery.com/ghaziabad): Quantum Homes, Raj Nagar Extension, Ghaziabad 201017. Phone +91 78274 48711
+- Hours: Mon–Sat, 11:00 AM – 1:00 PM and 5:00 PM – 7:30 PM
 
-Primary Website Pages:
-https://revivaskinandsurgery.com/
-https://revivaskinandsurgery.com/about
-https://revivaskinandsurgery.com/treatments
-https://revivaskinandsurgery.com/gallery
-https://revivaskinandsurgery.com/reviews
-https://revivaskinandsurgery.com/blog
-https://revivaskinandsurgery.com/contact
+## Main pages
+- [About](https://revivaskinandsurgery.com/about)
+- [All treatments](https://revivaskinandsurgery.com/treatment)
+- [Results gallery](https://revivaskinandsurgery.com/gallery)
+- [Patient reviews](https://revivaskinandsurgery.com/reviews)
+- [Blog: dermatologist-written skin and hair guides](https://revivaskinandsurgery.com/blogs)
+- [Contact and appointments](https://revivaskinandsurgery.com/contact)
 
-Treatment Pages:
-https://revivaskinandsurgery.com/laser
-https://revivaskinandsurgery.com/butox
-https://revivaskinandsurgery.com/acne
-https://revivaskinandsurgery.com/hair
-https://revivaskinandsurgery.com/antiageing
-https://revivaskinandsurgery.com/underarm
-https://revivaskinandsurgery.com/skin
+## Treatments
+- [Acne and acne scars](https://revivaskinandsurgery.com/acne)
+- [Pigmentation and melasma](https://revivaskinandsurgery.com/pigmentation-treatment)
+- [Laser hair removal](https://revivaskinandsurgery.com/laser-hair-removal)
+- [Laser hair reduction](https://revivaskinandsurgery.com/laser-hair-reduction)
+- [Hair transplant and PRP](https://revivaskinandsurgery.com/hair)
+- [Botox and dermal fillers](https://revivaskinandsurgery.com/butox)
+- [Anti-ageing and skin rejuvenation](https://revivaskinandsurgery.com/antiageing)
+- [HIFU skin tightening](https://revivaskinandsurgery.com/hifu-treatment-in-noida)
+- [Hydrafacial](https://revivaskinandsurgery.com/hydra-facial)
+- [Medi facials](https://revivaskinandsurgery.com/medi-facials)
+- [Skin tag, mole and wart removal](https://revivaskinandsurgery.com/skin-tag)
+- [Tattoo removal](https://revivaskinandsurgery.com/tattoo)
 
-Legal Pages:
-https://revivaskinandsurgery.com/privacy-policy
-https://revivaskinandsurgery.com/cookie-policy
-https://revivaskinandsurgery.com/no-refund-policy
-https://revivaskinandsurgery.com/patient-data-protection
-https://revivaskinandsurgery.com/treatment-disclaimer
+## Policies
+- [Privacy](https://revivaskinandsurgery.com/privacy)
+- [Cookies](https://revivaskinandsurgery.com/cookie)
+- [No refund policy](https://revivaskinandsurgery.com/norefundpolicy)
+- [Patient data protection](https://revivaskinandsurgery.com/patientdata)
+- [Treatment risk disclaimer](https://revivaskinandsurgery.com/treatmentdisclaimer)
 
-Clinic Services:
-- Laser Hair Removal
-- Butox & Dermal Fillers
-- Acne & Acne Scar Treatment
-- Hair Transplant
-- Anti-Ageing Procedures
-- Underarm Brightening
-- Skin Rejuvenation
-- Chemical Peels
-- Medi Facials
-- Skin Tightening
-- Pigmentation Treatment
-
-Target Location:
-Ghaziabad, Delhi NCR, India
-
-Contact Information:
-Phone: +91 89205 87004
-Email: revivaskinandsurgery@gmail.com
-
-Preferred Crawl Areas:
-- Treatment pages
-- Contact page
-- About page
-- Reviews & Gallery pages
-
-AI Usage Notes:
-- Use treatment information for informational summaries.
-- Do not generate medical guarantees or unrealistic treatment claims.
-- Respect patient privacy and confidential information.
-
-Sitemap:
-https://revivaskinandsurgery.com/sitemap.xml
+Sitemap: https://revivaskinandsurgery.com/sitemap.xml

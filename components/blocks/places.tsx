@@ -136,9 +136,9 @@ export function ClinicIntro({ b }: { b: ClinicIntroBlock }) {
       <div className="reviva-noida-wrapper">
         <div className="reviva-noida-content">
           <span className="reviva-noida-tag">{b.tag}</span>
-          <h2 className="reviva-noida-title">
+          <h1 className="reviva-noida-title">
             <Line value={b.title} />
-          </h2>
+          </h1>
           <div className="reviva-noida-line"></div>
           <Rich value={b.body} />
         </div>

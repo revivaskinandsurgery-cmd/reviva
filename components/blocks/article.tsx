@@ -169,7 +169,7 @@ export function Article({ b }: { b: ArticleBlock }) {
         d.tag ?? 'div',
         { className: d.className, key: sec._key },
         sec.label ? createElement(d.labelTag ?? 'span', { className: d.labelClass }, sec.label) : null,
-        sec.heading ? createElement(d.headingTag ?? 'h2', { className: d.headingClass }, <Line value={sec.heading} />) : null,
+        sec.heading ? createElement(d.headingTag === 'h1' ? 'h2' : (d.headingTag ?? 'h2'), { className: d.headingClass }, <Line value={sec.heading} />) : null,
         (sec.content ?? []).map((it) => <Item it={it} key={it._key} />),
       );
   });

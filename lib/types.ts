@@ -63,6 +63,9 @@ export type DocMeta = {
   metaDescription?: string;
   /** "Hide from Google" */
   noindex?: boolean;
+  /** Search keywords (meta keywords + structured data). */
+  keywords?: string[];
+  _updatedAt?: string;
   /** Overrides the site's share image for this page. */
   shareImage?: Picture;
   bodyClass?: string;

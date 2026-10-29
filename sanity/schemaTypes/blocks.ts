@@ -146,6 +146,8 @@ export const richText = defineType({
       },
     }),
     defineArrayMember({ type: 'figure' }),
+    defineArrayMember({ type: 'richTable' }),
+    defineArrayMember({ type: 'postFaqList' }),
   ],
 });
 
@@ -157,11 +159,49 @@ export const figure = defineType({
   fields: [
     defineField({ name: 'image', type: 'image' }),
     str('alt', 'Alt text'),
+    str('caption', 'Caption (shown under the picture)'),
     defineField({ name: 'src', type: 'string', hidden: true }),
     defineField({ name: 'originalAssetId', type: 'string', hidden: true }),
     defineField({ name: 'className', type: 'string', hidden: true }),
   ],
   preview: { select: { media: 'image', title: 'alt' } },
+});
+
+/* A comparison table inside an article: one row per entry, one text per cell. */
+export const richTable = defineType({
+  name: 'richTable',
+  title: 'Table',
+  type: 'object',
+  icon: ThListIcon,
+  fields: [
+    defineField({ name: 'hasHeader', title: 'First row is a header', type: 'boolean', initialValue: true }),
+    defineField({
+      name: 'rows',
+      title: 'Rows',
+      type: 'array',
+      of: [defineArrayMember({ type: 'object', name: 'tableRow', title: 'Row', fields: [defineField({ name: 'cells', title: 'Cells', type: 'array', of: [defineArrayMember({ type: 'string' })] })], preview: { select: { cells: 'cells' }, prepare: ({ cells }) => ({ title: (cells ?? []).join('  |  ') }) } })],
+    }),
+  ],
+  preview: { select: { rows: 'rows' }, prepare: ({ rows }) => ({ title: 'Table', subtitle: `${rows?.length ?? 0} rows` }) },
+});
+
+/* Questions and answers inside an article (shown as open/close boxes and
+   reported to Google as FAQ rich results). */
+export const postFaq = defineType({
+  name: 'postFaq',
+  title: 'Question',
+  type: 'object',
+  icon: HelpCircleIcon,
+  fields: [str('question', 'Question'), txt('answer', 'Answer', 4)],
+  preview: { select: { title: 'question', subtitle: 'answer' } },
+});
+export const postFaqList = defineType({
+  name: 'postFaqList',
+  title: 'FAQ (questions & answers)',
+  type: 'object',
+  icon: HelpCircleIcon,
+  fields: [list('items', 'Questions', 'postFaq')],
+  preview: { select: { items: 'items' }, prepare: ({ items }) => ({ title: 'FAQ', subtitle: `${items?.length ?? 0} questions` }) },
 });
 
 // ---- treatment pages ------------------------------------------------------------
@@ -696,20 +736,50 @@ export const spacer = defineType({
   preview: { prepare: () => ({ title: '— empty line —' }) },
 });
 
+/* "Related articles" for treatment pages: blog posts of the chosen
+   categories (newest first), after any posts picked by hand. */
+export const relatedPosts = defineType({
+  name: 'relatedPosts',
+  title: 'Related blog articles',
+  type: 'object',
+  icon: ThListIcon,
+  fields: [
+    str('heading', 'Heading', 'e.g. "Read more about acne treatment".'),
+    defineField({
+      name: 'categories',
+      title: 'Show articles from these categories',
+      type: 'array',
+      of: [defineArrayMember({ type: 'reference', to: [{ type: 'postCategory' }] })],
+      description: 'Newest articles of these topics are shown automatically - new articles appear here without any editing.',
+    }),
+    defineField({
+      name: 'posts',
+      title: 'Or pick articles by hand (shown first)',
+      type: 'array',
+      of: [defineArrayMember({ type: 'reference', to: [{ type: 'post' }] })],
+    }),
+    defineField({ name: 'limit', title: 'How many articles', type: 'number', initialValue: 3, options: { list: [3, 6] } }),
+  ],
+  preview: {
+    select: { heading: 'heading', cats: 'categories', posts: 'posts' },
+    prepare: ({ heading, cats, posts }) => ({ title: heading || 'Related articles', subtitle: `Blog · ${cats?.length ?? 0} categories, ${posts?.length ?? 0} picked by hand` }),
+  },
+});
+
 /** The page builder field. */
 export const PAGE_BLOCKS = [
   'homeHero', 'serviceHero', 'pageHero', 'legalHero', 'banner',
   'serviceOverview', 'procedure', 'beforeAfter', 'faq', 'ctaBanner',
   'article', 'legalContent', 'galleryFilters', 'galleryGrid',
   'reviews', 'treatmentCards', 'clinicIntro', 'clinicGallery', 'signatureTreatments',
-  'linkGroups', 'contactSection', 'postGrid', 'spacer',
+  'linkGroups', 'contactSection', 'postGrid', 'relatedPosts', 'spacer',
 ];
 
 export const blockTypes = [
-  textLine, picture, linkItem, buttonLink, richText, figure,
+  textLine, picture, linkItem, buttonLink, richText, figure, richTable, postFaq, postFaqList,
   serviceHero, overviewColumn, serviceOverview, procedureStep, procedure, beforeAfter, faqItem, faq, ctaBanner, banner,
   pageHero, legalHero, legalClause, legalContent, galleryFilters, galleryGrid,
   articleText, articleBox, articleCard, articleCards, articleListItem, articleList, articleImage, articleButton, articleCallout, articleNote, articleMedia, articleSection, article,
   heroContact, heroStat, homeHero, review, reviews, treatmentCard, treatmentCards, clinicIntro, clinicGallery, signatureCard, signatureTreatments,
-  linkGroup, linkGroups, contactDetail, contactMap, contactSection, postGrid, spacer,
+  linkGroup, linkGroups, contactDetail, contactMap, contactSection, postGrid, relatedPosts, spacer,
 ];

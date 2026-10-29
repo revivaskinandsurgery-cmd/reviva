@@ -35,6 +35,7 @@ export async function generateMetadata({ params }: LayoutProps<'/lp/[slug]'>): P
   return {
     title,
     description: lp.metaDescription,
+    alternates: { canonical: `https://revivaskinandsurgery.com/lp/${slug}` },
     robots: { index: true, follow: true },
     openGraph: { type: 'website', title, description: lp.metaDescription },
     icons: ICON[lp.design ?? ''] ? { icon: [{ url: ICON[lp.design ?? ''], type: 'image/webp' }] } : undefined,

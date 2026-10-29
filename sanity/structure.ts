@@ -6,6 +6,7 @@ import { FolderIcon } from '@sanity/icons/Folder';
 import { DocumentIcon } from '@sanity/icons/Document';
 import { DocumentsIcon } from '@sanity/icons/Documents';
 import { EditIcon } from '@sanity/icons/Edit';
+import { TagIcon } from '@sanity/icons/Tag';
 import { STATUSES } from './schemaTypes/enquiry';
 import { apiVersion } from '../lib/sanity-env';
 
@@ -68,7 +69,7 @@ function build(S: StructureBuilder, { settings, pages }: Data) {
     S.documentList().title(title).schemaType('page').filter(filter).params(params).defaultOrdering([{ field: 'path', direction: 'asc' }]);
 
   // A menu link whose page has related documents: the page itself + the list.
-  const withChildren = (label: string, href: string, childTitle: string, list: ReturnType<typeof docList>) => {
+  const withChildren = (label: string, href: string, childTitle: string, list: Parameters<ListItemBuilder['child']>[0]) => {
     const self = pageItem(`${label} page`, href);
     return S.listItem()
       .id(sid('g', label))
@@ -76,7 +77,21 @@ function build(S: StructureBuilder, { settings, pages }: Data) {
       .icon(FolderIcon)
       .child(S.list().title(label).items([...(self ? [self] : []), S.listItem().id(sid('l', label)).title(childTitle).icon(DocumentsIcon).child(list)]));
   };
-  const posts = S.documentTypeList('post').title('Blog posts').defaultOrdering([{ field: 'publishedAt', direction: 'desc' }]);
+  const newestFirst = [{ field: 'publishedAt', direction: 'desc' as const }];
+  const allPosts = S.documentTypeList('post').title('All blog posts').defaultOrdering(newestFirst);
+  // Blog posts grouped by category (the list refreshes with the category documents).
+  const byCategory = S.documentTypeList('postCategory')
+    .title('Posts by category')
+    .child((categoryId) =>
+      S.documentList().title('Posts').schemaType('post').filter('_type == "post" && $categoryId in categories[]._ref').params({ categoryId }).defaultOrdering(newestFirst),
+    );
+  const posts = S.list()
+    .title('Blog')
+    .items([
+      S.listItem().id('posts-all').title('All blog posts').icon(DocumentsIcon).child(allPosts),
+      S.listItem().id('posts-by-category').title('Posts by category').icon(FolderIcon).child(byCategory),
+      S.listItem().id('posts-categories').title('Categories (add / rename)').icon(TagIcon).child(S.documentTypeList('postCategory').title('Categories')),
+    ]);
 
   const menu: ListItemBuilder[] = [];
   for (const item of settings?.nav ?? []) {

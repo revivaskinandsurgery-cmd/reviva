@@ -1,4 +1,4 @@
-import { Rich, type RichValue } from '@/lib/rich';
+import { outline, Rich, type RichValue } from '@/lib/rich';
 import { pictureSrc, type Picture } from '@/lib/image';
 import type { SiteSettings } from '@/lib/types';
 import { LoadMore } from './LoadMore';
@@ -27,8 +27,13 @@ export type Post = {
   cover?: Picture;
   body?: RichValue;
   design?: PostDesign;
+  /** Who checked the medical content (shown only when filled in). */
+  reviewedBy?: string;
+  keywords?: string[];
+  categories?: { title: string; slug: string }[];
+  _updatedAt?: string;
 };
-export type PostCard = Pick<Post, 'title' | 'path' | 'publishedAt' | 'readMinutes' | 'excerpt' | 'cover'>;
+export type PostCard = Pick<Post, 'title' | 'path' | 'publishedAt' | 'readMinutes' | 'excerpt' | 'cover'> & { _id?: string; categorySlugs?: string[]; categoryIds?: string[] };
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const parts = (iso?: string) => {
@@ -195,7 +200,33 @@ function Sidebar({ s, latest }: { s: SiteSettings; latest: PostCard[] }) {
   );
 }
 
-export function PostView({ post, s, latest, prev, next }: { post: Post; s: SiteSettings; latest: PostCard[]; prev?: PostCard; next?: PostCard }) {
+/** Three more articles on the same topic (else the newest). */
+export function Related({ cards, heading = 'Related articles', className = 'rv-rel' }: { cards: PostCard[]; heading?: string; className?: string }) {
+  if (!cards.length) return null;
+  return (
+    <section className={className} aria-labelledby="rv-rel-title">
+      <h2 className="rv-rel__title" id="rv-rel-title">
+        {heading}
+      </h2>
+      <div className="rv-rel__grid">
+        {cards.map((c) => {
+          const img = pictureSrc(c.cover);
+          return (
+            <a className="rv-rel__card" href={c.path} key={c.path}>
+              {img ? <img src={img} alt="" width="400" height="260" loading="lazy" decoding="async" /> : null}
+              <span className="rv-rel__name">{c.title}</span>
+              <span className="rv-rel__meta">
+                {cardDate(c.publishedAt)} · {c.readMinutes ?? 3} min read
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+export function PostView({ post, s, latest, prev, next, related = [] }: { post: Post; s: SiteSettings; latest: PostCard[]; prev?: PostCard; next?: PostCard; related?: PostCard[] }) {
   const d = post.design ?? {};
   const long = d.outer !== 'main-wrapper' && d.image === 'featured';
   const src = pictureSrc(post.cover);
@@ -210,17 +241,59 @@ export function PostView({ post, s, latest, prev, next }: { post: Post; s: SiteS
     ) : (
       <img src={src} className="featured-image" alt={alt} />
     );
+  // Posts with a category get the newer layout: breadcrumb, quick answer, "On this page", related articles.
+  const modern = Boolean(post.categories?.length);
+  const body = post.body ?? [];
+  const [first, ...rest] = body;
+  const quick = modern && first && first._type === 'block' && (first as { style?: string }).style === 'normal' ? first : null;
+  const main = quick ? rest : body;
+  const toc = modern ? outline(main) : [];
   const article = (
     <>
+      {modern ? (
+        <nav className="rv-crumbs" aria-label="Breadcrumb">
+          <ol>
+            <li>
+              <a href="/">Home</a>
+            </li>
+            <li>
+              <a href="/blogs">Blog</a>
+            </li>
+            <li aria-current="page">{post.title}</li>
+          </ol>
+        </nav>
+      ) : null}
       <h1 className={d.titleClass}>{post.title}</h1>
       <div className="blog-meta">
         <span>{post.author}</span>
         <span>{postDate(post.publishedAt, long)}</span>
+        {modern ? <span>{post.readMinutes ?? 3} min read</span> : null}
+        {modern ? <span className="rv-cat">{post.categories![0].title}</span> : null}
       </div>
+      {post.reviewedBy ? <p className="rv-reviewed">Medically reviewed by {post.reviewedBy}</p> : null}
       {image}
+      {quick ? (
+        <aside className="rv-quick" aria-label="Quick answer">
+          <strong className="rv-quick__label">Quick answer</strong>
+          <Rich value={[quick]} />
+        </aside>
+      ) : null}
+      {toc.length >= 3 ? (
+        <nav className="rv-toc" aria-label="On this page">
+          <strong className="rv-toc__title">On this page</strong>
+          <ol>
+            {toc.map((t) => (
+              <li key={t.id}>
+                <a href={`#${t.id}`}>{t.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      ) : null}
       <div className="blog-content">
-        <Rich value={post.body} />
+        <Rich value={main} />
       </div>
+      {modern ? <Related cards={related} /> : null}
       <PostEnd s={s} prev={prev} next={next} />
     </>
   );
@@ -262,5 +335,26 @@ export function PostGrid({ posts }: { posts: PostCard[] }) {
         })}
       </LoadMore>
     </section>
+  );
+}
+
+export type RelatedPostsBlock = { _type: 'relatedPosts'; _key: string; heading?: string; categories?: { _ref: string }[]; posts?: { _ref: string }[]; limit?: number };
+
+/** "Related articles" on a treatment page: hand-picked posts first, then the newest of the chosen categories. */
+export function RelatedPosts({ b, posts }: { b: RelatedPostsBlock; posts: PostCard[] }) {
+  const picked = (b.posts ?? []).map((r) => posts.find((p) => p._id === r._ref)).filter((p): p is PostCard => Boolean(p));
+  const topics = new Set((b.categories ?? []).map((c) => c._ref));
+  const byTopic = posts.filter((p) => p.categoryIds?.some((id) => topics.has(id)));
+  const cards = [...picked, ...byTopic].filter((c, i, all) => all.indexOf(c) === i).slice(0, b.limit ?? 3);
+  return (
+    <div className="rv-related-sec">
+      <Related cards={cards} heading={b.heading || 'Related articles'} className="rv-rel" />
+      {cards.length ? (
+        <a className="rv-bs-more rv-related-sec__all" href="/blogs">
+          All articles
+          <ArrowRight />
+        </a>
+      ) : null}
+    </div>
   );
 }

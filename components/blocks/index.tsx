@@ -1,6 +1,6 @@
 import { Banner, BeforeAfter, CtaBanner, Faq, Procedure, ServiceHero, ServiceOverview } from './treatment';
 import { BLOCKS_MORE } from './more';
-import { PostGrid, type PostCard } from '@/components/blog';
+import { PostGrid, RelatedPosts, type PostCard } from '@/components/blog';
 
 /* Page builder: one component per section type. Pages are an ordered list
    of these blocks, edited as sections in the Studio. */
@@ -18,6 +18,7 @@ const COMPONENTS: Record<string, (props: { b: any; data: BlockData }) => React.R
   banner: Banner,
   spacer: () => <br />,
   postGrid: ({ data }) => <PostGrid posts={data.posts} />,
+  relatedPosts: ({ b, data }) => <RelatedPosts b={b} posts={data.posts} />,
   ...BLOCKS_MORE,
 };
 

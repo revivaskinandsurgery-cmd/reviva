@@ -60,7 +60,17 @@ export async function generateMetadata({ params }: LayoutProps<'/[[...path]]'>):
       googleBot: { index: !doc.noindex, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 },
     },
     verification: s.googleVerification ? { google: s.googleVerification } : undefined,
-    icons: { icon: [{ url: '/assets/images/favicon.webp', type: 'image/webp' }] },
+    // Square PNG + ICO icons (Google needs a multiple of 48px; a WebP-only favicon shows a grey globe).
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: '32x32 48x48' },
+        { url: '/favicon-48x48.png', type: 'image/png', sizes: '48x48' },
+        { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+        { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
+      ],
+      shortcut: '/favicon.ico',
+      apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+    },
     openGraph: {
       type: post ? 'article' : 'website',
       locale: 'en_IN',

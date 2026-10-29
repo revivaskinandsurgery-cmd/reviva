@@ -147,7 +147,6 @@ export const richText = defineType({
     }),
     defineArrayMember({ type: 'figure' }),
     defineArrayMember({ type: 'richTable' }),
-    defineArrayMember({ type: 'postFaqList' }),
   ],
 });
 

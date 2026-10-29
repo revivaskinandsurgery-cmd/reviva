@@ -103,7 +103,7 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[[.
   const jsonLd: (object | null)[] = [...siteGraph(s, site, absoluteImage({ src: s.logo }, site))];
   if (page.kind === 'post') {
     const body = page.body ?? [];
-    const faqs = body.filter((b): b is FaqList => b._type === 'postFaqList').flatMap((f) => f.items ?? []);
+    const faqs = [...(page.faqs ?? []), ...body.filter((b): b is FaqList => b._type === 'postFaqList').flatMap((f) => f.items ?? [])];
     const words = plainText(body).split(' ').length;
     jsonLd.push(
       breadcrumbs(site, [{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blogs' }, { name: page.title, path: urlPath }]),

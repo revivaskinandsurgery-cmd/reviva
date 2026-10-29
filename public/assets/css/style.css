@@ -7467,3 +7467,10 @@ body{
 .rv-related-sec{ max-width:1200px; margin:0 auto; padding:56px 24px 64px; }
 .rv-related-sec .rv-rel{ margin:0 0 20px; }
 .rv-related-sec .rv-related-sec__all{ display:inline-flex; }
+
+/* Blog articles: the separate "Frequently asked questions" section */
+.rv-faq{ margin:44px 0 8px; scroll-margin-top:110px; }
+.rv-faq__title{ font-family:'Cormorant Garamond',Georgia,serif; font-size:28px; font-weight:500; color:#2d241f; margin:0 0 18px; }
+.rv-faq details{ background:#f7f2ec; border-radius:8px; padding:14px 18px; margin-bottom:10px; }
+.rv-faq summary{ font-weight:600; color:#222; cursor:pointer; line-height:1.5; }
+.rv-faq details p{ margin:10px 0 0; font-size:15px; line-height:1.8; color:#555; }

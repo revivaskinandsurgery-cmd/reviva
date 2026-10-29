@@ -32,6 +32,7 @@ export type Post = {
   keywords?: string[];
   hideFromBlog?: boolean;
   relatedPageIds?: string[];
+  faqs?: { _key: string; question?: string; answer?: string }[];
   _updatedAt?: string;
 };
 export type PostCard = Pick<Post, 'title' | 'path' | 'publishedAt' | 'readMinutes' | 'excerpt' | 'cover'> & { _id?: string; relatedPageIds?: string[]; tags?: string[] };
@@ -248,7 +249,8 @@ export function PostView({ post, s, latest, prev, next, related = [] }: { post: 
   const [first, ...rest] = body;
   const quick = modern && first && first._type === 'block' && (first as { style?: string }).style === 'normal' ? first : null;
   const main = quick ? rest : body;
-  const toc = modern ? outline(main) : [];
+  const faqs = (post.faqs ?? []).filter((q) => q.question && q.answer);
+  const toc = [...(modern ? outline(main) : []), ...(modern && faqs.length ? [{ id: 'faq', text: 'Frequently asked questions' }] : [])];
   const article = (
     <>
       {modern ? (
@@ -293,6 +295,19 @@ export function PostView({ post, s, latest, prev, next, related = [] }: { post: 
       <div className="blog-content">
         <Rich value={main} />
       </div>
+      {faqs.length ? (
+        <section className="rv-faq" id="faq" aria-labelledby="rv-faq-title">
+          <h2 className="rv-faq__title" id="rv-faq-title">
+            Frequently asked questions
+          </h2>
+          {faqs.map((q) => (
+            <details key={q._key}>
+              <summary>{q.question}</summary>
+              <p>{q.answer}</p>
+            </details>
+          ))}
+        </section>
+      ) : null}
       {modern ? <Related cards={related} /> : null}
       <PostEnd s={s} prev={prev} next={next} />
     </>

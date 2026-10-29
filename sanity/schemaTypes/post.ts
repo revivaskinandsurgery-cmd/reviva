@@ -72,6 +72,19 @@ export const post = defineType({
         'Open with a 2–3 sentence direct answer (it is shown in the "Quick answer" box). Use Heading 2 for sections (they build the "On this page" list), Heading 3 for sub-sections. The "+" menu adds pictures, tables and FAQ questions.',
       validation: (r) => r.custom(unlessHidden((v) => (v && v.length >= 3 ? true : 'The article is empty or too short.'))),
     }),
+    defineField({
+      name: 'faqs',
+      title: 'FAQ: questions and answers',
+      type: 'array',
+      group: 'content',
+      description:
+        'Optional. Add each question with its answer. They are shown in a "Frequently asked questions" section after the article (and sent to Google as FAQ data). Write short, direct answers.',
+      of: [defineArrayMember({ type: 'postFaq' })],
+      validation: (r) =>
+        r.custom((v: { question?: string; answer?: string }[] | undefined) =>
+          (v ?? []).every((q) => q.question?.trim() && q.answer?.trim()) ? true : 'Every FAQ needs both a question and an answer.',
+        ),
+    }),
     defineField({ name: 'tags', title: 'Tags (keywords)', type: 'array', group: 'content', description: 'Search phrases this article is about, e.g. "acne treatment in Noida". Used as keywords for Google.', of: [defineArrayMember({ type: 'string' })], options: { layout: 'tags' } }),
     defineField({ name: 'author', title: 'Author', type: 'string', group: 'content', initialValue: 'Reviva' }),
     defineField({

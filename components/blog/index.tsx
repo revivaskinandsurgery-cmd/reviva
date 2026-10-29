@@ -340,14 +340,12 @@ export function PostGrid({ posts }: { posts: PostCard[] }) {
 
 export type RelatedPostsBlock = { _type: 'relatedPosts'; _key: string; heading?: string; categories?: { _ref: string }[]; posts?: { _ref: string }[]; limit?: number };
 
-/** "Related articles" on a treatment page: hand-picked posts first, then the newest of the chosen categories. */
+/** "Related articles" on a page: hand-picked posts first, then the posts whose editor chose this page. */
 export function RelatedPosts({ b, posts, pageId }: { b: RelatedPostsBlock; posts: PostCard[]; pageId?: string }) {
   const picked = (b.posts ?? []).map((r) => posts.find((p) => p._id === r._ref)).filter((p): p is PostCard => Boolean(p));
-  const topics = new Set((b.categories ?? []).map((c) => c._ref));
-  // articles whose editor chose this page, then the newest of the chosen categories
+  // hand-picked here first, then every article whose editor chose this page (newest first)
   const chosenHere = pageId ? posts.filter((p) => p.relatedPageIds?.includes(pageId)) : [];
-  const byTopic = posts.filter((p) => p.categoryIds?.some((id) => topics.has(id)));
-  const cards = [...picked, ...chosenHere, ...byTopic].filter((c, i, all) => all.indexOf(c) === i).slice(0, b.limit ?? 3);
+  const cards = [...picked, ...chosenHere].filter((c, i, all) => all.indexOf(c) === i).slice(0, b.limit ?? 3);
   if (!cards.length) return null;
   return (
     <div className="rv-related-sec">

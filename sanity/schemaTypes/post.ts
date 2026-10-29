@@ -38,18 +38,18 @@ export const post = defineType({
       title: 'Category',
       type: 'array',
       group: 'content',
-      description: 'Choose the topic. Treatment pages show the articles of their topic as "Related articles".',
+      description: 'The topic of the article (used to group posts and shown next to the date). It does not decide which pages show the article - use "Show this article on these pages" for that.',
       of: [defineArrayMember({ type: 'reference', to: [{ type: 'postCategory' }] })],
       validation: (r) => r.unique().custom(unlessHidden((v) => (v && v.length ? true : 'Choose a category (add new ones under Blog → Categories).'))),
     }),
     defineField({
       name: 'relatedPages',
-      title: 'Show on these treatment / service pages',
+      title: 'Show this article on these pages',
       type: 'array',
       group: 'content',
       description:
-        'Optional. Pick the treatment pages (e.g. Acne Treatment, Laser Hair Removal) where this article should appear under "Related articles". It is also shown on the pages of its category.',
-      of: [defineArrayMember({ type: 'reference', to: [{ type: 'page' }], options: { filter: 'count(blocks[_type == "serviceHero"]) > 0' } })],
+        'Choose the website pages (e.g. Acne Treatment, Laser Hair Removal, Hair Transplant) where this article is shown under "Related articles". Leave empty to show it only on the blog page.',
+      of: [defineArrayMember({ type: 'reference', to: [{ type: 'page' }] })],
       validation: (r) => r.unique(),
     }),
     defineField({

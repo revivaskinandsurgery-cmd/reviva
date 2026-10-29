@@ -736,8 +736,8 @@ export const spacer = defineType({
   preview: { prepare: () => ({ title: '— empty line —' }) },
 });
 
-/* "Related articles" for treatment pages: blog posts of the chosen
-   categories (newest first), after any posts picked by hand. */
+/* "Related articles" section of a page: the posts whose editor chose this
+   page (newest first), after any posts picked by hand here. */
 export const relatedPosts = defineType({
   name: 'relatedPosts',
   title: 'Related blog articles',
@@ -748,13 +748,15 @@ export const relatedPosts = defineType({
     defineField({
       name: 'categories',
       title: 'Show articles from these categories',
+      hidden: true, // no longer used: articles choose their pages (Blog post -> Show this article on these pages)
       type: 'array',
       of: [defineArrayMember({ type: 'reference', to: [{ type: 'postCategory' }] })],
       description: 'Newest articles of these topics are shown automatically - new articles appear here without any editing.',
     }),
     defineField({
       name: 'posts',
-      title: 'Or pick articles by hand (shown first)',
+      title: 'Pick articles by hand (shown first)',
+      description: 'Optional. Articles also appear here when their editor chose this page in the post.',
       type: 'array',
       of: [defineArrayMember({ type: 'reference', to: [{ type: 'post' }] })],
     }),
@@ -762,7 +764,7 @@ export const relatedPosts = defineType({
   ],
   preview: {
     select: { heading: 'heading', cats: 'categories', posts: 'posts' },
-    prepare: ({ heading, cats, posts }) => ({ title: heading || 'Related articles', subtitle: `Blog · ${cats?.length ?? 0} categories, ${posts?.length ?? 0} picked by hand` }),
+    prepare: ({ heading, cats, posts }) => ({ title: heading || 'Related articles', subtitle: `Blog · ${posts?.length ?? 0} picked by hand + articles that chose this page` }),
   },
 });
 

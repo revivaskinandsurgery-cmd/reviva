@@ -1,0 +1,179 @@
+import { createElement } from 'react';
+import { Inline, Rich, type Block, type RichValue } from '@/lib/rich';
+import { pictureSrc, type Picture } from '@/lib/image';
+
+/* Long-form treatment / clinic pages (Home article, About, Acne, HIFU...).
+   An article is a list of sections; each section has an optional small
+   label and heading, then content pieces: text, cards, highlighted boxes,
+   buttons. Every page keeps its own class names (hifu-…, acne-…) in the
+   hidden `design` objects, so its stylesheet applies unchanged. */
+
+type Design = { tag?: string; className?: string };
+type CardPart = { tag?: string; className?: string; role: 'badge' | 'title' | 'text' | 'body' | 'header' | 'list' | 'content'; inner?: { tag: string; className?: string }[] };
+
+export type ArticleItem =
+  | { _type: 'articleText'; _key: string; body?: RichValue }
+  | { _type: 'articleBox'; _key: string; design?: Design; body?: RichValue }
+  | {
+      _type: 'articleCards';
+      _key: string;
+      design?: Design & { cardTag?: string; cardClass?: string; parts?: CardPart[] };
+      cards?: {
+        _key: string;
+        badge?: RichValue;
+        title?: RichValue;
+        text?: RichValue;
+        body?: RichValue;
+        items?: { _key: string; text?: RichValue }[];
+        content?: ArticleItem[];
+      }[];
+    }
+  | { _type: 'articleNote'; _key: string; design?: Design & { iconClass?: string }; icon?: string; body?: RichValue }
+  | { _type: 'articleMedia'; _key: string; design?: Design & { imageClass?: string; textClass?: string }; picture?: Picture; body?: RichValue }
+  | { _type: 'articleList'; _key: string; design?: Design; items?: { _key: string; text?: RichValue }[] }
+  | { _type: 'articleImage'; _key: string; design?: Design; picture?: Picture }
+  | { _type: 'articleButton'; _key: string; design?: Design & { wrapTag?: string; wrapClass?: string }; label?: RichValue; href?: string; newTab?: boolean }
+  | {
+      _type: 'articleCallout';
+      _key: string;
+      design?: { className?: string; innerClass?: string; buttonClass?: string };
+      heading?: string;
+      text?: RichValue;
+      buttonLabel?: string;
+      buttonHref?: string;
+    };
+
+export type ArticleSection = {
+  _key: string;
+  design?: Design & { labelTag?: string; labelClass?: string; headingTag?: string; headingClass?: string };
+  label?: string;
+  heading?: RichValue;
+  content?: ArticleItem[];
+};
+export type ArticleBlock = { _type: 'article'; _key: string; design?: Design & { innerTag?: string; innerClass?: string }; sections?: ArticleSection[] };
+
+const Line = ({ value }: { value?: RichValue | string }) => {
+  if (typeof value === 'string') return <>{value}</>; // older plain-text values
+  const block = value?.find((b) => b._type === 'block') as Block | undefined;
+  return block ? <Inline block={block} /> : null;
+};
+
+function Item({ it }: { it: ArticleItem }) {
+  switch (it._type) {
+    case 'articleText':
+      return <Rich value={it.body} />;
+    case 'articleBox':
+      return createElement(it.design?.tag ?? 'div', { className: it.design?.className }, <Rich value={it.body} />);
+    case 'articleCards': {
+      const d = it.design ?? {};
+      return createElement(
+        d.tag ?? 'div',
+        { className: d.className },
+        (it.cards ?? []).map((c) =>
+          createElement(
+            d.cardTag ?? 'div',
+            { className: d.cardClass, key: c._key },
+            (d.parts ?? []).map((p, i) => {
+              if (p.role === 'content') return (c.content ?? []).map((it) => <Item it={it} key={it._key} />);
+              if (p.role === 'header') {
+                const [b, t] = p.inner ?? [];
+                return createElement(
+                  p.tag ?? 'div',
+                  { className: p.className, key: i },
+                  createElement(b?.tag ?? 'span', { className: b?.className, key: 'b' }, <Line value={c.badge} />),
+                  createElement(t?.tag ?? 'h3', { className: t?.className, key: 't' }, <Line value={c.title} />),
+                );
+              }
+              if (p.role === 'list')
+                return createElement(
+                  p.tag ?? 'ul',
+                  { className: p.className, key: i },
+                  (c.items ?? []).map((li) => (
+                    <li key={li._key}>
+                      <Line value={li.text} />
+                    </li>
+                  )),
+                );
+              return createElement(p.tag ?? 'div', { className: p.className, key: i }, p.role === 'body' ? <Rich value={c.body} /> : <Line value={c[p.role]} />);
+            }),
+          ),
+        ),
+      );
+    }
+    case 'articleList':
+      return createElement(
+        it.design?.tag ?? 'ul',
+        { className: it.design?.className },
+        (it.items ?? []).map((li) => (
+          <li key={li._key}>
+            <Line value={li.text} />
+          </li>
+        )),
+      );
+    case 'articleImage':
+      return createElement(it.design?.tag ?? 'div', { className: it.design?.className }, <img src={pictureSrc(it.picture)} alt={it.picture?.alt ?? ''} />);
+    case 'articleButton': {
+      const d = it.design ?? {};
+      const a = (
+        <a className={d.className} href={it.href} {...(it.newTab ? { target: '_blank', rel: 'noopener' } : {})}>
+          <Line value={it.label} />
+        </a>
+      );
+      return d.wrapTag ? createElement(d.wrapTag, { className: d.wrapClass }, a) : a;
+    }
+    case 'articleNote':
+      return createElement(
+        it.design?.tag ?? 'div',
+        { className: it.design?.className },
+        <div className={it.design?.iconClass}>{it.icon}</div>,
+        <Rich value={it.body} />,
+      );
+    case 'articleMedia': {
+      const d = it.design ?? {};
+      return createElement(
+        d.tag ?? 'div',
+        { className: d.className },
+        <div className={d.imageClass}>
+          <img src={pictureSrc(it.picture)} alt={it.picture?.alt ?? ''} />
+        </div>,
+        <div className={d.textClass}>
+          <Rich value={it.body} />
+        </div>,
+      );
+    }
+    case 'articleCallout': {
+      const d = it.design ?? {};
+      return (
+        <div className={d.className}>
+          <div className={d.innerClass}>
+            <h3>{it.heading}</h3>
+            {it.text ? (
+              <p>
+                <Line value={it.text} />
+              </p>
+            ) : null}
+            <a className={d.buttonClass} href={it.buttonHref}>
+              {it.buttonLabel}
+            </a>
+          </div>
+        </div>
+      );
+    }
+  }
+}
+
+export function Article({ b }: { b: ArticleBlock }) {
+  const sections = (b.sections ?? []).map((sec) => {
+      const d = sec.design ?? {};
+      return createElement(
+        d.tag ?? 'div',
+        { className: d.className, key: sec._key },
+        sec.label ? createElement(d.labelTag ?? 'span', { className: d.labelClass }, sec.label) : null,
+        sec.heading ? createElement(d.headingTag ?? 'h2', { className: d.headingClass }, <Line value={sec.heading} />) : null,
+        (sec.content ?? []).map((it) => <Item it={it} key={it._key} />),
+      );
+  });
+  const d = b.design ?? {};
+  const inner = d.innerClass ? createElement(d.innerTag ?? 'div', { className: d.innerClass }, sections) : sections;
+  return createElement(d.tag ?? 'section', { className: d.className }, inner);
+}

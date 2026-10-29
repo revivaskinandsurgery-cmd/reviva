@@ -98,6 +98,8 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[[.
   }
   const site = s.siteUrl.replace(/[/]+$/, '');
   const url = site + (urlPath === '/' ? '/' : urlPath);
+  // Tag Manager containers: the main one, then any extra ones (each listed once).
+  const gtmIds = [...new Set([s.gtmId, ...(s.extraGtmIds ?? [])].map((id) => id?.trim()).filter((id): id is string => /^GTM-[A-Z0-9]+$/.test(id ?? '')))];
 
   // Structured data for Google: the clinics + website on every page, then what this page is.
   const jsonLd: (object | null)[] = [...siteGraph(s, site, absoluteImage({ src: s.logo }, site))];
@@ -137,11 +139,11 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[[.
         ))}
       </head>
       <body className={page.bodyClass || undefined} suppressHydrationWarning>
-        {s.gtmId ? (
-          <noscript>
-            <iframe src={`https://www.googletagmanager.com/ns.html?id=${s.gtmId}`} height="0" width="0" style={{ display: 'none', visibility: 'hidden' }} />
+        {gtmIds.map((id) => (
+          <noscript key={id}>
+            <iframe src={`https://www.googletagmanager.com/ns.html?id=${id}`} height="0" width="0" style={{ display: 'none', visibility: 'hidden' }} />
           </noscript>
-        ) : null}
+        ))}
         <Header s={s} path={urlPath} />
         {children}
         <Footer s={s} />
@@ -154,11 +156,11 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[[.
             </Script>
           </>
         ) : null}
-        {s.gtmId ? (
-          <Script id="gtm" strategy="afterInteractive">
-            {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${s.gtmId}');`}
+        {gtmIds.map((id) => (
+          <Script id={`gtm-${id}`} key={id} strategy="afterInteractive">
+            {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');`}
           </Script>
-        ) : null}
+        ))}
       </body>
     </html>
   );

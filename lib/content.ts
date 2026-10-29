@@ -96,7 +96,7 @@ const EMPTY: SiteSettings = {
   footerTreatments: [], footerClinic: [], locations: [], email: '', hours: '', legal: [],
   bookLabel: '', bookLabelShort: '', footerHeadings: { treatments: '', clinic: '', visit: '', hours: '' }, copyright: '',
   notFound: { eyebrow: '', title: '', buttonLabel: '', buttonHref: '/' }, whatsappUrl: '',
-  siteUrl: 'https://revivaskinandsurgery.com', clinicName: '', gaId: '', gtmId: '', googleVerification: '',
+  siteUrl: 'https://revivaskinandsurgery.com', clinicName: '', gaId: '', gtmId: '', extraGtmIds: [], googleVerification: '',
   postCta: { eyebrow: '', title: '', text: '', altText: '', whatsappLabel: '', whatsappHref: '', bookLabel: '', bookHref: '' },
   blogSidebar: { treatmentsTitle: '', treatments: [], ctaEyebrow: '', ctaTitle: '', ctaText: '', ctaButtonLabel: '', ctaButtonHref: '' },
 };

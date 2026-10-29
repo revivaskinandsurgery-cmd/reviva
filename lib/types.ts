@@ -39,6 +39,8 @@ export type SiteSettings = {
   clinicName: string;
   gaId: string;
   gtmId: string;
+  /** More Tag Manager containers, loaded after the main one. */
+  extraGtmIds: string[];
   googleVerification: string;
   shareImage?: Picture;
   /** Consultation box under every blog post. */

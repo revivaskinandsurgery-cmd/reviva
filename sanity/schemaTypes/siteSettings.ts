@@ -129,6 +129,7 @@ export const siteSettings = defineType({
     defineField({ name: 'shareImage', title: 'Share image (shown when a page is shared on WhatsApp / Facebook)', type: 'picture', group: 'seo' }),
     defineField({ name: 'gaId', title: 'Google Analytics ID', type: 'string', group: 'seo', description: 'e.g. G-NK5136X7JT' }),
     defineField({ name: 'gtmId', title: 'Google Tag Manager ID', type: 'string', group: 'seo', description: 'e.g. GTM-M3DMBLNW' }),
+    defineField({ name: 'extraGtmIds', title: 'More Google Tag Manager IDs (optional)', type: 'array', of: [defineArrayMember({ type: 'string' })], options: { layout: 'tags' }, group: 'seo', description: 'Extra containers loaded on every page next to the one above, e.g. GTM-N3T8D85D. Press Enter after each. Make sure two containers do not send the same events twice.' }),
     defineField({ name: 'googleVerification', title: 'Google Search Console verification code', type: 'string', group: 'seo' }),
     defineField({ name: 'whatsappUrl', title: 'WhatsApp link (floating button)', type: 'string', group: 'header', description: 'e.g. https://wa.me/917827448711' }),
     defineField({

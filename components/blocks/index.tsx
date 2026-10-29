@@ -5,7 +5,7 @@ import { PostGrid, RelatedPosts, type PostCard } from '@/components/blog';
 /* Page builder: one component per section type. Pages are an ordered list
    of these blocks, edited as sections in the Studio. */
 
-export type BlockData = { posts: PostCard[] };
+export type BlockData = { posts: PostCard[]; pageId?: string };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const COMPONENTS: Record<string, (props: { b: any; data: BlockData }) => React.ReactNode> = {
@@ -18,7 +18,7 @@ const COMPONENTS: Record<string, (props: { b: any; data: BlockData }) => React.R
   banner: Banner,
   spacer: () => <br />,
   postGrid: ({ data }) => <PostGrid posts={data.posts} />,
-  relatedPosts: ({ b, data }) => <RelatedPosts b={b} posts={data.posts} />,
+  relatedPosts: ({ b, data }) => <RelatedPosts b={b} posts={data.posts} pageId={data.pageId} />,
   ...BLOCKS_MORE,
 };
 

@@ -74,6 +74,12 @@ const PAGES = {
   '/oxygeneo-facial': [FACIALS, 'Read more about facials'],
   '/lumiere-glow-ritual': [FACIALS, 'Read more about glow treatments'],
   '/reviva-glow-infusion': [FACIALS, 'Read more about glow treatments'],
+  // no matching blog topic yet: the section shows only articles an editor attached to the page
+  '/tattoo': [[], 'Read more about tattoo removal'],
+  '/skin-tag': [[], 'Read more about skin tag and mole removal'],
+  '/xanthelasma-removal': [[], 'Read more about xanthelasma'],
+  '/earlobe-repair': [[], 'Read more about earlobe repair'],
+  '/eyebrows-microblading': [[], 'Read more about microblading'],
   '/prx-plus-treatment': [FACIALS, 'Read more about skin rejuvenation'],
 };
 

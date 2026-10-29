@@ -43,6 +43,16 @@ export const post = defineType({
       validation: (r) => r.unique().custom(unlessHidden((v) => (v && v.length ? true : 'Choose a category (add new ones under Blog → Categories).'))),
     }),
     defineField({
+      name: 'relatedPages',
+      title: 'Show on these treatment / service pages',
+      type: 'array',
+      group: 'content',
+      description:
+        'Optional. Pick the treatment pages (e.g. Acne Treatment, Laser Hair Removal) where this article should appear under "Related articles". It is also shown on the pages of its category.',
+      of: [defineArrayMember({ type: 'reference', to: [{ type: 'page' }], options: { filter: 'count(blocks[_type == "serviceHero"]) > 0' } })],
+      validation: (r) => r.unique(),
+    }),
+    defineField({
       name: 'cover',
       title: 'Cover picture',
       type: 'picture',
@@ -110,7 +120,7 @@ export const post = defineType({
       validation: (r) => r.max(175).warning('Over about 160 characters Google cuts the description off.'),
     }),
     defineField({ name: 'shareImage', title: 'Share image (optional)', type: 'picture', group: 'seo', description: 'Shown when this page is shared. Leave empty to use the cover picture.' }),
-    defineField({ name: 'noindex', title: 'Hide from Google', type: 'boolean', group: 'seo', initialValue: false }),
+    defineField({ name: 'noindex', title: 'Hide from Google', type: 'boolean', group: ['content', 'seo'], initialValue: false, description: 'Turn on to keep this article out of Google search results (it can still be opened with its link).' }),
     defineField({ name: 'hideFromBlog', title: 'Hide from the blog page', type: 'boolean', group: 'seo', initialValue: false, description: 'Removes the post from the blog list, sidebar, previous/next links and the sitemap. The address still opens.' }),
 
     // Page layout of the article: set automatically, not edited.

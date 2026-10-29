@@ -19,10 +19,15 @@ export default async function SitePage({ params }: PageProps<'/[[...path]]'>) {
   if (doc.kind === 'post') {
     const cards = await getPostCards();
     const i = cards.findIndex((c) => c.path === doc.path);
-    // Same-topic articles first, topped up with the newest.
-    const topics = new Set(doc.categories?.map((c) => c.slug));
+    // The articles that share the most pages with this one come first, topped up with the newest.
+    const pages = new Set(doc.relatedPageIds ?? []);
+    // What an article is about: the words of its tags and title ("laser hair reduction" -> laser, hair, reduction), without very common ones.
+    const COMMON = new Set(['noida', 'ghaziabad', 'treatment', 'treatments', 'skin', 'what', 'which', 'with', 'your', 'that', 'from', 'before', 'after', 'does', 'best', 'guide', 'should', 'when', 'about', 'options']);
+    const words = (text: string[]) => new Set(text.flatMap((t) => t.toLowerCase().split(/[^a-z0-9]+/)).filter((w) => w.length > 3 && !COMMON.has(w)));
+    const mine = words([doc.title, ...(doc.keywords ?? [])]);
+    const shared = (c: (typeof cards)[number]) => (c.relatedPageIds ?? []).filter((x) => pages.has(x)).length + 2 * [...words([c.title, ...(c.tags ?? [])])].filter((w) => mine.has(w)).length;
     const others = cards.filter((c) => c.path !== doc.path);
-    const related = [...others.filter((c) => c.categorySlugs?.some((x) => topics.has(x))), ...others].filter((c, n, all) => all.indexOf(c) === n).slice(0, 3);
+    const related = [...others.filter((c) => shared(c) > 0).sort((x, y) => shared(y) - shared(x)), ...others].filter((c, n, all) => all.indexOf(c) === n).slice(0, 3);
     return (
       <div id="main" tabIndex={-1}>
         <div className="rv-scrim"></div>

@@ -763,8 +763,8 @@ export const relatedPosts = defineType({
     defineField({ name: 'limit', title: 'How many articles', type: 'number', initialValue: 3, options: { list: [3, 6] } }),
   ],
   preview: {
-    select: { heading: 'heading', cats: 'categories', posts: 'posts' },
-    prepare: ({ heading, cats, posts }) => ({ title: heading || 'Related articles', subtitle: `Blog · ${posts?.length ?? 0} picked by hand + articles that chose this page` }),
+    select: { heading: 'heading', posts: 'posts' },
+    prepare: ({ heading, posts }) => ({ title: heading || 'Related articles', subtitle: `Blog · ${posts?.length ?? 0} picked by hand + articles that chose this page` }),
   },
 });
 

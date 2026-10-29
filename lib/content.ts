@@ -15,10 +15,9 @@ const META = `_id, _updatedAt, title, metaDescription, keywords, noindex, shareI
 const PAGE_QUERY = defineQuery(`*[_type == "page" && path == $path][0]{
   ${META}, path, name, blocks, whatsapp }`);
 const POST_FIELDS = `title, "path": "/blog/" + slug.current, publishedAt, "readMinutes": coalesce(readMinutes, math::max([1, round(length(pt::text(body)) / 1200)])), excerpt, cover`;
-const CATEGORY = `"categories": categories[]->{ title, "slug": slug.current }`;
 const POST_QUERY = defineQuery(`*[_type == "post" && slug.current == $slug][0]{
-  ${META}, ${POST_FIELDS}, author, reviewedBy, body, design, seoTitle, "keywords": tags, ${CATEGORY} }`);
-const CARDS_QUERY = defineQuery(`*[_type == "post" && defined(slug.current) && defined(publishedAt) && hideFromBlog != true] | order(publishedAt desc, _createdAt desc){ _id, ${POST_FIELDS}, "categorySlugs": categories[]->slug.current, "categoryIds": categories[]._ref, "relatedPageIds": relatedPages[]._ref }`);
+  ${META}, ${POST_FIELDS}, author, reviewedBy, body, design, seoTitle, "keywords": tags, hideFromBlog, "relatedPageIds": relatedPages[]._ref, tags }`);
+const CARDS_QUERY = defineQuery(`*[_type == "post" && defined(slug.current) && defined(publishedAt) && hideFromBlog != true] | order(publishedAt desc, _createdAt desc){ _id, ${POST_FIELDS}, "relatedPageIds": relatedPages[]._ref }`);
 const SITEMAP_QUERY = defineQuery(`[
   ...*[_type == "page" && defined(path) && noindex != true]{ "path": path, "updatedAt": _updatedAt },
   ...*[_type == "post" && defined(slug.current) && noindex != true && hideFromBlog != true]{ "path": "/blog/" + slug.current, "updatedAt": _updatedAt }

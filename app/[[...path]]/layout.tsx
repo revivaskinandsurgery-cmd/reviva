@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: LayoutProps<'/[[...path]]'>):
       url,
       images: image ? [{ url: image, alt: imageAlt }] : undefined,
       ...(post
-        ? { publishedTime: post.publishedAt, modifiedTime: post._updatedAt, authors: [s.clinicName], section: post.categories?.[0]?.title, tags: post.keywords }
+        ? { publishedTime: post.publishedAt, modifiedTime: post._updatedAt, authors: [s.clinicName], tags: post.keywords }
         : {}),
     },
     twitter: { card: 'summary_large_image', title: doc.headTitle, description: doc.metaDescription || undefined, images: image ? [image] : undefined },
@@ -115,7 +115,6 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[[.
         published: page.publishedAt,
         modified: page._updatedAt,
         keywords: page.keywords,
-        section: page.categories?.[0]?.title,
         words,
       }),
       faqPage(faqs),

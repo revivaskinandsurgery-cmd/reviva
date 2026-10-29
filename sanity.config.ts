@@ -17,7 +17,7 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
     // Site Settings is a singleton: no "create new" / duplicate / delete.
-    templates: (templates) => templates.filter(({ schemaType }) => schemaType !== 'siteSettings'),
+    templates: (templates) => templates.filter(({ schemaType }) => schemaType !== 'siteSettings' && schemaType !== 'postCategory'),
   },
   document: {
     actions: (actions, { schemaType }) =>

@@ -30,10 +30,11 @@ export type Post = {
   /** Who checked the medical content (shown only when filled in). */
   reviewedBy?: string;
   keywords?: string[];
-  categories?: { title: string; slug: string }[];
+  hideFromBlog?: boolean;
+  relatedPageIds?: string[];
   _updatedAt?: string;
 };
-export type PostCard = Pick<Post, 'title' | 'path' | 'publishedAt' | 'readMinutes' | 'excerpt' | 'cover'> & { _id?: string; categorySlugs?: string[]; categoryIds?: string[]; relatedPageIds?: string[] };
+export type PostCard = Pick<Post, 'title' | 'path' | 'publishedAt' | 'readMinutes' | 'excerpt' | 'cover'> & { _id?: string; relatedPageIds?: string[]; tags?: string[] };
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const parts = (iso?: string) => {
@@ -241,8 +242,8 @@ export function PostView({ post, s, latest, prev, next, related = [] }: { post: 
     ) : (
       <img src={src} className="featured-image" alt={alt} />
     );
-  // Posts with a category get the newer layout: breadcrumb, quick answer, "On this page", related articles.
-  const modern = Boolean(post.categories?.length);
+  // Posts shown on the blog get the newer layout: breadcrumb, quick answer, "On this page", related articles.
+  const modern = post.hideFromBlog !== true;
   const body = post.body ?? [];
   const [first, ...rest] = body;
   const quick = modern && first && first._type === 'block' && (first as { style?: string }).style === 'normal' ? first : null;
@@ -268,7 +269,6 @@ export function PostView({ post, s, latest, prev, next, related = [] }: { post: 
         <span>{post.author}</span>
         <span>{postDate(post.publishedAt, long)}</span>
         {modern ? <span>{post.readMinutes ?? 3} min read</span> : null}
-        {modern ? <span className="rv-cat">{post.categories![0].title}</span> : null}
       </div>
       {post.reviewedBy ? <p className="rv-reviewed">Medically reviewed by {post.reviewedBy}</p> : null}
       {image}
@@ -338,7 +338,7 @@ export function PostGrid({ posts }: { posts: PostCard[] }) {
   );
 }
 
-export type RelatedPostsBlock = { _type: 'relatedPosts'; _key: string; heading?: string; categories?: { _ref: string }[]; posts?: { _ref: string }[]; limit?: number };
+export type RelatedPostsBlock = { _type: 'relatedPosts'; _key: string; heading?: string; posts?: { _ref: string }[]; limit?: number };
 
 /** "Related articles" on a page: hand-picked posts first, then the posts whose editor chose this page. */
 export function RelatedPosts({ b, posts, pageId }: { b: RelatedPostsBlock; posts: PostCard[]; pageId?: string }) {

@@ -33,15 +33,8 @@ export const post = defineType({
       description: 'The big heading of the article. Start with the main search phrase, e.g. "Acne Treatment in Noida: …".',
       validation: (r) => r.required().max(110).warning('Long titles are cut off on the blog page (best: under 80 characters).'),
     }),
-    defineField({
-      name: 'categories',
-      title: 'Category',
-      type: 'array',
-      group: 'content',
-      description: 'The topic of the article (used to group posts and shown next to the date). It does not decide which pages show the article - use "Show this article on these pages" for that.',
-      of: [defineArrayMember({ type: 'reference', to: [{ type: 'postCategory' }] })],
-      validation: (r) => r.unique().custom(unlessHidden((v) => (v && v.length ? true : 'Choose a category (add new ones under Blog → Categories).'))),
-    }),
+    // Old topic labels from the WordPress import: not used any more (articles choose their pages), kept only so existing data stays valid.
+    defineField({ name: 'categories', type: 'array', hidden: true, of: [defineArrayMember({ type: 'reference', to: [{ type: 'postCategory' }] })] }),
     defineField({
       name: 'relatedPages',
       title: 'Show this article on these pages',
@@ -129,7 +122,7 @@ export const post = defineType({
   ],
   orderings: [{ title: 'Newest first', name: 'newest', by: [{ field: 'publishedAt', direction: 'desc' }] }],
   preview: {
-    select: { title: 'title', date: 'publishedAt', media: 'cover.image', category: 'categories.0.title', hidden: 'hideFromBlog' },
-    prepare: ({ title, date, media, category, hidden }) => ({ title, subtitle: [date, category, hidden ? 'hidden' : ''].filter(Boolean).join(' · '), media }),
+    select: { title: 'title', date: 'publishedAt', media: 'cover.image', hidden: 'hideFromBlog' },
+    prepare: ({ title, date, media, hidden }) => ({ title, subtitle: [date, hidden ? 'hidden from the blog' : ''].filter(Boolean).join(' · '), media }),
   },
 });

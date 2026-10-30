@@ -7474,3 +7474,12 @@ body{
 .rv-faq details{ background:#f7f2ec; border-radius:8px; padding:14px 18px; margin-bottom:10px; }
 .rv-faq summary{ font-weight:600; color:#222; cursor:pointer; line-height:1.5; }
 .rv-faq details p{ margin:10px 0 0; font-size:15px; line-height:1.8; color:#555; }
+
+/* Footer: the address is a link to Google Maps, drawn like the plain text it replaced */
+.rv-location p a{
+  color:inherit;
+  text-decoration:none;
+  transition:color 160ms var(--rv-ease);
+}
+.rv-location p a:hover,
+.rv-location p a:focus-visible{ color:var(--rv-gold); text-decoration:underline; text-underline-offset:3px; }

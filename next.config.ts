@@ -17,10 +17,11 @@ const nextConfig: NextConfig = {
 
   async headers() {
     return [
-      // Same caching the old .htaccess set: CSS/JS are cache-busted with ?v=.
+      // Same caching the old .htaccess set: CSS/JS are cache-busted with ?v= (the deploy's commit id).
+      // Not while developing: the version is always "dev" there, so a year of caching would hide edits.
       {
         source: '/assets/:path*.:ext(css|js)',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+        headers: [{ key: 'Cache-Control', value: process.env.NODE_ENV === 'production' ? 'public, max-age=31536000, immutable' : 'no-cache' }],
       },
       {
         source: '/:path*.:ext(webp|avif|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)',

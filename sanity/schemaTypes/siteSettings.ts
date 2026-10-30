@@ -114,7 +114,7 @@ export const siteSettings = defineType({
               title: 'Opening hours of this clinic',
               type: 'text',
               rows: 3,
-              description: 'As in the Google Business Profile, one rule per line. Example: "Tue–Sun: 11:00 AM – 8:00 PM" on the first line, "Monday: Closed" on the second.',
+              description: 'As in the Google Business Profile, one rule per line. Example: "Tue–Sun: 11:00 AM – 08:00 PM" on the first line, "Monday: Closed" on the second.',
             }),
             defineField({ name: 'latitude', title: 'Latitude (for Google)', type: 'number' }),
             defineField({ name: 'longitude', title: 'Longitude (for Google)', type: 'number' }),

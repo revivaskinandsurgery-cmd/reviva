@@ -19,8 +19,8 @@ const client = createClient({
 
 // Google Business Profile, 30 Oct 2026.
 const HOURS = {
-  noida: 'Tue–Sun: 11:00 AM – 8:00 PM\nMonday: Closed',
-  ghaziabad: 'Fri–Wed: 11:00 AM – 8:00 PM\nThursday: Closed',
+  noida: 'Tue–Sun: 11:00 AM – 08:00 PM\nMonday: Closed',
+  ghaziabad: 'Fri–Wed: 11:00 AM – 08:00 PM\nThursday: Closed',
 };
 
 const tx = client.transaction();
@@ -43,7 +43,7 @@ tx.patch(contact._id, (p) => p.set({ metaDescription: contact.metaDescription.re
 
 // Noida landing page footer
 const lp = await client.fetch(`*[_type == "landingPage" && slug.current == "skin-clinic-in-noida"][0]{ _id, "k": sections[_type == "clinicFooter"][0]._key }`);
-if (lp?.k) tx.patch(lp._id, (p) => p.set({ [`sections[_key=="${lp.k}"].hours`]: '🕐 Tue–Sun: 11AM – 8PM\nMonday: Closed' }));
+if (lp?.k) tx.patch(lp._id, (p) => p.set({ [`sections[_key=="${lp.k}"].hours`]: '🕐 Tue–Sun: 11:00 AM – 08:00 PM\nMonday: Closed' }));
 
 console.log(`clinics: ${settings.locations.length} | contact notes: yes | landing: ${lp?.k ? 'yes' : 'no'}`);
 console.log('new Contact description:', contact.metaDescription.replace('Open Mon–Sat.', 'Open six days a week at each clinic.'));

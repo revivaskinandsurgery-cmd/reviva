@@ -1,6 +1,6 @@
 /* Clinic opening hours, written one rule per line in Site Settings:
 
-     Tue–Sun: 11:00 AM – 8:00 PM
+     Tue–Sun: 11:00 AM – 08:00 PM
      Monday: Closed
 
    Ranges may wrap past Sunday ("Fri–Wed"), "Closed" days are skipped, and a

@@ -57,6 +57,25 @@ export function siteGraph(s: SiteSettings, site: string, logo?: string): Json[] 
   return [...clinics, website];
 }
 
+/** The main pages of the site (menu + both clinics), so Google knows what the key sections are. */
+export function siteNavigation(s: SiteSettings, site: string): Json {
+  const items = [
+    ...s.nav.filter((n) => n.href && n.href !== '/').map((n) => ({ name: n.label, path: n.href as string })),
+    ...s.locations.map((l) => ({ name: `${l.name} clinic`, path: `/${l.name.toLowerCase()}` })),
+  ];
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Main pages',
+    itemListElement: items.map((it, i) => ({
+      '@type': 'SiteNavigationElement',
+      position: i + 1,
+      name: it.name,
+      url: site + (it.path.startsWith('/') ? it.path : `/${it.path}`),
+    })),
+  };
+}
+
 export function breadcrumbs(site: string, trail: { name: string; path: string }[]): Json {
   return {
     '@context': 'https://schema.org',

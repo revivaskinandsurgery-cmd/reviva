@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import { SiteScript } from '@/components/SiteScript';
 import { getDoc, getRedirect, getSettings, toUrlPath } from '@/lib/content';
 import { absoluteImage } from '@/lib/image';
-import { blogPosting, breadcrumbs, faqPage, plainText, service, siteGraph } from '@/lib/seo';
+import { blogPosting, breadcrumbs, faqPage, plainText, service, siteGraph, siteNavigation } from '@/lib/seo';
 import type { FaqList } from '@/lib/rich';
 import type { FaqBlock } from '@/components/blocks/treatment';
 
@@ -123,7 +123,9 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[[.
       }),
       faqPage(faqs),
     );
-  } else if (urlPath !== '/') {
+  } else if (urlPath === '/') {
+    jsonLd.push(siteNavigation(s, site));
+  } else {
     const blocks = page.blocks ?? [];
     const faqs = blocks.filter((b) => b._type === 'faq').flatMap((b) => ((b as unknown as FaqBlock).items ?? []).map((i) => ({ question: i.question, answer: plainText(i.answer) })));
     jsonLd.push(breadcrumbs(site, [{ name: 'Home', path: '/' }, { name: shortName(page.title), path: urlPath }]), faqPage(faqs));

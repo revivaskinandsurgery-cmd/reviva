@@ -56,6 +56,11 @@ export default function Header({ s, path }: { s: SiteSettings; path: string }) {
                         </div>
                       ))}
                     </div>
+                    {item.href ? (
+                      <a className="rv-panel__all" href={item.href} aria-current={current(item.href)}>
+                        View all {item.label.toLowerCase()}
+                      </a>
+                    ) : null}
                   </div>
                 </li>
               ) : (

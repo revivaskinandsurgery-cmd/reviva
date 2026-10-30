@@ -7513,3 +7513,18 @@ body{
   .page-blog12 .blog-content h2{ font-size:28px; }
   .page-blog12 .blog-content h3{ font-size:23px; }
 }
+
+/* Header: link to the treatments hub inside the Treatments dropdown */
+.rv-panel__all{
+  display:inline-block;
+  margin:18px 0 0;
+  padding:10px 0 0;
+  color:var(--rv-gold);
+  font-size:13.5px;
+  font-weight:600;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  text-decoration:none;
+  border-top:1px solid rgba(217,177,114,.22);
+}
+.rv-panel__all:hover{ color:var(--rv-cream); text-decoration:underline; text-underline-offset:4px; }

@@ -28,14 +28,14 @@ export default function Footer({ s }: { s: SiteSettings }) {
             <div className="rv-footer__social">
               {(
                 [
-                  ['facebook', 'Facebook', <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1Z" /></svg>],
-                  ['instagram', 'Instagram', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" stroke="none" /></svg>],
-                  ['x', 'X', <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3l-6.6 7.5L21.7 21h-6l-4.7-6.1L5.6 21h-3l7-8L2.6 3h6.1l4.2 5.6L17.5 3Zm-1.1 16.1h1.7L7.7 4.8H5.9l10.5 14.3Z" /></svg>],
-                  ['threads', 'Threads', <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><text x="12" y="17.5" textAnchor="middle" fontSize="17" fontWeight="700" fontFamily="Inter, Arial, sans-serif">@</text></svg>],
-                  ['quora', 'Quora', <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><text x="12" y="17.5" textAnchor="middle" fontSize="17" fontWeight="700" fontFamily="Inter, Arial, sans-serif">Q</text></svg>],
-                  ['youtube', 'YouTube', <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z" /></svg>],
+                  { key: 'facebook', name: 'Facebook', icon: <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1Z" /></svg> },
+                  { key: 'instagram', name: 'Instagram', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" stroke="none" /></svg> },
+                  { key: 'x', name: 'X', icon: <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3l-6.6 7.5L21.7 21h-6l-4.7-6.1L5.6 21h-3l7-8L2.6 3h6.1l4.2 5.6L17.5 3Zm-1.1 16.1h1.7L7.7 4.8H5.9l10.5 14.3Z" /></svg> },
+                  { key: 'threads', name: 'Threads', icon: <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><text x="12" y="17.5" textAnchor="middle" fontSize="17" fontWeight="700" fontFamily="Inter, Arial, sans-serif">@</text></svg> },
+                  { key: 'quora', name: 'Quora', icon: <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><text x="12" y="17.5" textAnchor="middle" fontSize="17" fontWeight="700" fontFamily="Inter, Arial, sans-serif">Q</text></svg> },
+                  { key: 'youtube', name: 'YouTube', icon: <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z" /></svg> },
                 ] as const
-              ).map(([key, name, icon]) => {
+              ).map(({ key, name, icon }) => {
                 const href = s.social[key];
                 return href && href !== '#' ? (
                   <a href={href} target="_blank" rel="noopener me" aria-label={`Reviva on ${name}`} key={key}>

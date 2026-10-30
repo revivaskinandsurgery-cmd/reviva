@@ -92,7 +92,7 @@ export async function getSitemapEntries(): Promise<{ path: string; updatedAt: st
    rather than breaking the page. */
 const EMPTY: SiteSettings = {
   logo: '', logoAlt: '', callDisplay: '', callTel: '', bookUrl: '', nav: [], footerBlurb: '',
-  social: { facebook: '', instagram: '', youtube: '', x: '' },
+  social: {},
   footerTreatments: [], footerClinic: [], locations: [], email: '', hours: '', legal: [],
   bookLabel: '', bookLabelShort: '', footerHeadings: { treatments: '', clinic: '', visit: '', hours: '' }, copyright: '',
   notFound: { eyebrow: '', title: '', buttonLabel: '', buttonHref: '/' }, whatsappUrl: '',

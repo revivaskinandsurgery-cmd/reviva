@@ -80,7 +80,8 @@ export const siteSettings = defineType({
       title: 'Social links',
       type: 'object',
       group: 'footer',
-      fields: ['facebook', 'instagram', 'youtube', 'x'].map((n) => defineField({ name: n, type: 'string' })),
+      description: 'Full profile links (https://...). Leave a field empty to hide that icon in the footer. They are also sent to Google as the official profiles of the clinic.',
+      fields: ['facebook', 'instagram', 'x', 'threads', 'quora', 'youtube'].map((n) => defineField({ name: n, type: 'url', validation: (r) => r.uri({ scheme: ['https'], allowRelative: false }) })),
     }),
     defineField({
       name: 'footerHeadings',

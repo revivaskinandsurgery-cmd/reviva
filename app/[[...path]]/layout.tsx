@@ -47,6 +47,7 @@ export async function generateMetadata({ params }: LayoutProps<'/[[...path]]'>):
   // A post is shared with its own cover picture unless it has a share image.
   const image = absoluteImage(doc.shareImage, site) ?? absoluteImage(post?.cover, site) ?? absoluteImage(s.shareImage, site);
   const imageAlt = post?.cover?.alt || doc.title || s.clinicName;
+  const xHandle = s.social.x?.match(/(?:x|twitter)[.]com[/]([A-Za-z0-9_]+)/)?.[1];
   return {
     metadataBase: new URL(site),
     title: doc.headTitle,
@@ -84,7 +85,7 @@ export async function generateMetadata({ params }: LayoutProps<'/[[...path]]'>):
         ? { publishedTime: post.publishedAt, modifiedTime: post._updatedAt, authors: [s.clinicName], tags: post.keywords }
         : {}),
     },
-    twitter: { card: 'summary_large_image', title: doc.headTitle, description: doc.metaDescription || undefined, images: image ? [image] : undefined },
+    twitter: { card: 'summary_large_image', ...(xHandle ? { site: `@${xHandle}`, creator: `@${xHandle}` } : {}), title: doc.headTitle, description: doc.metaDescription || undefined, images: image ? [image] : undefined },
   };
 }
 

@@ -21,7 +21,7 @@ export type SiteSettings = {
   bookUrl: string;
   nav: NavItem[];
   footerBlurb: string;
-  social: { facebook: string; instagram: string; youtube: string; x: string };
+  social: { facebook?: string; instagram?: string; youtube?: string; x?: string; threads?: string; quora?: string };
   footerTreatments: Link[];
   footerClinic: Link[];
   locations: Location[];

@@ -1,5 +1,6 @@
 import type { SiteSettings } from './types';
 import type { RichValue } from './rich';
+import { openingHoursSpec } from './hours';
 
 /* Structured data (JSON-LD) for Google, built from Site Settings and the
    page being shown. Only facts that are visible on the site go in here. */
@@ -13,38 +14,11 @@ export const plainText = (blocks?: RichValue) =>
     .replace(/\s+/g, ' ')
     .trim();
 
-const DAYS: Record<string, string> = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' };
-const ORDER = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-
-/** "Mon–Sat: 11:00 AM – 1:00 PM, 5:00 PM – 7:30 PM" -> openingHoursSpecification. */
-function openingHours(hours: string): Json[] | undefined {
-  const m = hours.match(/^\s*([A-Za-z]{3})\w*\s*[–-]\s*([A-Za-z]{3})\w*\s*:\s*(.+)$/);
-  if (!m) return undefined;
-  const from = ORDER.indexOf(m[1].toLowerCase());
-  const to = ORDER.indexOf(m[2].toLowerCase());
-  if (from < 0 || to < from) return undefined;
-  const to24 = (t: string) => {
-    const x = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-    if (!x) return null;
-    const h = (Number(x[1]) % 12) + (x[3].toUpperCase() === 'PM' ? 12 : 0);
-    return `${String(h).padStart(2, '0')}:${x[2]}`;
-  };
-  const slots = [...m[3].matchAll(/(\d{1,2}:\d{2}\s*[AP]M)\s*[–-]\s*(\d{1,2}:\d{2}\s*[AP]M)/gi)];
-  const days = ORDER.slice(from, to + 1).map((d) => DAYS[d]);
-  const spec = slots.flatMap((s) => {
-    const [opens, closes] = [to24(s[1]), to24(s[2])];
-    return opens && closes ? [{ '@type': 'OpeningHoursSpecification', dayOfWeek: days, opens, closes }] : [];
-  });
-  return spec.length ? spec : undefined;
-}
-
-
 export const clinicId = (site: string, name: string) => `${site}/#${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
 /** The business: one MedicalClinic per location, plus the WebSite. */
 export function siteGraph(s: SiteSettings, site: string, logo?: string): Json[] {
   const sameAs = Object.values(s.social).filter((u) => /^https?:\/\//.test(u));
-  const hours = openingHours(s.hours);
   const clinics = s.locations.map((l) => ({
     '@context': 'https://schema.org',
     '@type': ['MedicalClinic', 'Dermatology'],
@@ -66,7 +40,7 @@ export function siteGraph(s: SiteSettings, site: string, logo?: string): Json[] 
       addressCountry: 'IN',
     },
     areaServed: [l.name, 'Delhi NCR'],
-    openingHoursSpecification: hours,
+    openingHoursSpecification: openingHoursSpec(l.hours || s.hours),
     geo: l.latitude != null && l.longitude != null ? { '@type': 'GeoCoordinates', latitude: l.latitude, longitude: l.longitude } : undefined,
     hasMap: l.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${s.clinicName} ${l.address}`)}`,
     sameAs: sameAs.length ? sameAs : undefined,

@@ -109,6 +109,13 @@ export const siteSettings = defineType({
             defineField({ name: 'name', type: 'string' }),
             defineField({ name: 'address', type: 'text', rows: 2, description: 'Exactly as in the Google Business Profile.' }),
             defineField({ name: 'mapUrl', title: 'Google Maps link', type: 'url', description: 'In Google Maps open the clinic, click Share and paste the link (maps.app.goo.gl/...). The address on the website opens it.' }),
+            defineField({
+              name: 'hours',
+              title: 'Opening hours of this clinic',
+              type: 'text',
+              rows: 3,
+              description: 'As in the Google Business Profile, one rule per line. Example: "Tue–Sun: 11:00 AM – 8:00 PM" on the first line, "Monday: Closed" on the second.',
+            }),
             defineField({ name: 'latitude', title: 'Latitude (for Google)', type: 'number' }),
             defineField({ name: 'longitude', title: 'Longitude (for Google)', type: 'number' }),
             defineField({ name: 'phoneDisplay', title: 'Phone (shown)', type: 'string' }),
@@ -118,7 +125,7 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({ name: 'email', type: 'string', group: 'footer' }),
-    defineField({ name: 'hours', title: 'Clinic hours', type: 'string', group: 'footer' }),
+    defineField({ name: 'hours', title: 'Clinic hours (only used if a clinic has none of its own)', type: 'string', group: 'footer' }),
     defineField({ name: 'legal', title: 'Footer: legal links', type: 'array', of: [link], group: 'footer' }),
     defineField({
       name: 'copyright',

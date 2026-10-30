@@ -7483,3 +7483,11 @@ body{
 }
 .rv-location p a:hover,
 .rv-location p a:focus-visible{ color:var(--rv-gold); text-decoration:underline; text-underline-offset:3px; }
+
+/* Footer: opening hours under each clinic */
+.rv-location .rv-location__hours{
+  margin:6px 0 0;
+  font-size:13.5px;
+  line-height:1.65;
+  color:var(--rv-muted);
+}

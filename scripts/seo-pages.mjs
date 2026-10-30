@@ -37,7 +37,7 @@ const PAGES = {
   ],
   '/contact': [
     'Contact Reviva Skin Clinic | Noida & Ghaziabad',
-    'Book an appointment at Reviva Skin & Surgery Clinic. Call, WhatsApp or visit us in Sector 76 Noida or Raj Nagar Extension Ghaziabad. Open Mon–Sat.',
+    'Book an appointment at Reviva Skin & Surgery Clinic. Call, WhatsApp or visit us in Sector 76 Noida or Raj Nagar Extension Ghaziabad. Open six days a week at each clinic.',
     ['skin clinic appointment Noida', 'dermatologist appointment Ghaziabad', 'Reviva clinic contact'],
   ],
   '/noida': [

@@ -1,3 +1,4 @@
+import { Lines } from '@/lib/rich';
 import type { SiteSettings } from '@/lib/types';
 
 const PHONE_ICON = 'M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2Z';
@@ -73,6 +74,11 @@ export default function Footer({ s }: { s: SiteSettings }) {
                   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={PHONE_ICON} stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
                   {loc.phoneDisplay}
                 </a>
+                {loc.hours ? (
+                  <p className="rv-location__hours">
+                    <Lines text={loc.hours} />
+                  </p>
+                ) : null}
               </div>
             ))}
 
@@ -83,10 +89,12 @@ export default function Footer({ s }: { s: SiteSettings }) {
               </a>
             </div>
 
-            <div className="rv-hours">
-              <h4>{s.footerHeadings.hours}</h4>
-              <p>{s.hours}</p>
-            </div>
+            {s.locations.some((l) => l.hours) || !s.hours ? null : (
+              <div className="rv-hours">
+                <h4>{s.footerHeadings.hours}</h4>
+                <p>{s.hours}</p>
+              </div>
+            )}
           </div>
         </div>
 

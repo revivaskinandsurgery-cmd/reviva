@@ -11,7 +11,7 @@ export type NavColumn = {
 
 export type NavItem = { label: string; href?: string; columns?: NavColumn[] };
 
-export type Location = { name: string; address: string; phoneDisplay: string; phoneTel: string; /** Google Maps link of the clinic (opens the Google listing). */ mapUrl?: string; latitude?: number; longitude?: number };
+export type Location = { name: string; address: string; phoneDisplay: string; phoneTel: string; /** Google Maps link of the clinic (opens the Google listing). */ mapUrl?: string; latitude?: number; longitude?: number; /** One rule per line, e.g. "Tue–Sun: 11:00 AM – 8:00 PM" and "Monday: Closed". */ hours?: string };
 
 export type SiteSettings = {
   logo: string;

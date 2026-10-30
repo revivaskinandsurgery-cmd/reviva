@@ -20,7 +20,8 @@ export const dynamic = 'force-dynamic';
 
 /* The site script, versioned per deploy so browsers fetch a fixed copy
    at once (/assets/*.js is cached for a year). */
-const SCRIPT_VERSION = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ?? 'dev';
+// Locally there is no commit id, so use the server start time: every restart gets a fresh URL and old cached copies are never reused.
+const SCRIPT_VERSION = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ?? Date.now().toString(36);
 
 const STYLESHEETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css',

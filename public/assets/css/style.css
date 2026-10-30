@@ -7491,3 +7491,25 @@ body{
   line-height:1.65;
   color:var(--rv-muted);
 }
+
+/* Blog posts: the title and the headings inside the article use the site's heading font
+   (Cormorant Garamond, as on the rest of the site); the article text stays Inter.
+   Cormorant looks smaller than Inter at the same size, so desktop sizes are a little larger. */
+.page-blog12 .blog-title,
+.page-blog1 .blog-left h1,
+.page-blog12 .blog-content h2,
+.page-blog12 .blog-content h3,
+.page-blog1 .blog-content h3,
+.page-blog1 .blog-content h4{
+  font-family:'Cormorant Garamond',Georgia,serif;
+}
+.page-blog12 .blog-title{ font-size:60px; font-weight:500; letter-spacing:-.5px; }
+.page-blog1 .blog-left h1{ font-weight:500; letter-spacing:-.5px; }
+.page-blog12 .blog-content h2{ font-size:34px; font-weight:500; }
+.page-blog12 .blog-content h3{ font-size:26px; font-weight:600; }
+.page-blog1 .blog-content h3{ font-size:32px; font-weight:600; }
+.page-blog1 .blog-content h4{ font-size:26px; font-weight:600; }
+@media (max-width:768px){
+  .page-blog12 .blog-content h2{ font-size:28px; }
+  .page-blog12 .blog-content h3{ font-size:23px; }
+}

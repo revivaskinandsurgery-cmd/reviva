@@ -7513,13 +7513,3 @@ body{
   .page-blog12 .blog-content h2{ font-size:28px; }
   .page-blog12 .blog-content h3{ font-size:23px; }
 }
-
-/* Blog articles: "Treatments related to this article" (picked by the editor) */
-.rv-tx{ margin:40px 0 8px; padding:26px 28px; background:#f7f2ec; border-left:4px solid #c49a5a; border-radius:0 10px 10px 0; }
-.rv-tx__title{ font-family:'Cormorant Garamond',Georgia,serif; font-size:28px; font-weight:500; color:#2d241f; margin:0 0 14px; }
-.rv-tx__list{ list-style:none; margin:0 0 18px; padding:0; display:flex; flex-wrap:wrap; gap:10px; }
-.rv-tx__list a{ display:inline-flex; align-items:center; gap:8px; padding:10px 16px; background:#fff; border:1px solid #e6dfd6; border-radius:999px; color:#2d241f; text-decoration:none; font-size:15px; font-weight:500; transition:border-color 160ms ease, color 160ms ease; }
-.rv-tx__list a:hover{ border-color:#c49a5a; color:#8a6d3b; }
-.rv-tx__list svg{ flex:0 0 auto; }
-.rv-tx__book{ display:inline-block; padding:12px 22px; background:#2d241f; color:#fff; border-radius:999px; text-decoration:none; font-size:14px; font-weight:600; letter-spacing:.04em; }
-.rv-tx__book:hover{ background:#8a6d3b; }

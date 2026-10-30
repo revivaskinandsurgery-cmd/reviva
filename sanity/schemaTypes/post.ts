@@ -46,16 +46,6 @@ export const post = defineType({
       validation: (r) => r.unique(),
     }),
     defineField({
-      name: 'treatmentLinks',
-      title: 'Treatments to link to from this article',
-      type: 'array',
-      group: 'content',
-      description:
-        'Optional. Choose up to 3 treatment pages that this article is about. They appear in a "Treatments related to this article" box under the article, so readers can go straight to the treatment. Leave empty to show no box.',
-      of: [defineArrayMember({ type: 'reference', to: [{ type: 'page' }], options: { filter: 'count(blocks[_type == "serviceHero"]) > 0' } })],
-      validation: (r) => r.unique().max(3),
-    }),
-    defineField({
       name: 'cover',
       title: 'Cover picture',
       type: 'picture',

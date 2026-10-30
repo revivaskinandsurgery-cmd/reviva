@@ -42,8 +42,8 @@ const PAGES = {
   ],
   '/noida': [
     `Skin Clinic in Sector 76, Noida | ${BRAND}`,
-    'Visit Reviva Skin & Surgery Clinic at Amrapali Silicon City, Sector 76, Noida for dermatology, hair, laser and aesthetic treatments. Call to book your consultation.',
-    ['skin clinic Sector 76 Noida', 'dermatologist in Noida', 'laser clinic Noida', 'Amrapali Silicon City clinic'],
+    'Visit Reviva Skin & Surgery Clinic at Amarpali Silicon City, Sector 76, Noida for dermatology, hair, laser and aesthetic treatments. Call to book your consultation.',
+    ['skin clinic Sector 76 Noida', 'dermatologist in Noida', 'laser clinic Noida', 'Amarpali Silicon City clinic'],
   ],
   '/ghaziabad': [
     'Skin Clinic in Raj Nagar Extension, Ghaziabad | Reviva',

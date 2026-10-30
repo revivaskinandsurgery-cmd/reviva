@@ -38,8 +38,6 @@ function openingHours(hours: string): Json[] | undefined {
   return spec.length ? spec : undefined;
 }
 
-// Postcodes of the two clinics (used only when the address in Site Settings has none).
-const POSTCODE: Record<string, string> = { ghaziabad: '201017', noida: '201301' };
 
 export const clinicId = (site: string, name: string) => `${site}/#${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
@@ -64,12 +62,13 @@ export function siteGraph(s: SiteSettings, site: string, logo?: string): Json[] 
       streetAddress: l.address.replace(/,[ ]*(Noida|Ghaziabad).*$/i, ''),
       addressLocality: l.name,
       addressRegion: 'Uttar Pradesh',
-      postalCode: l.address.match(/\b\d{6}\b/)?.[0] ?? POSTCODE[l.name.toLowerCase()],
+      postalCode: l.address.match(/\b\d{6}\b/)?.[0],
       addressCountry: 'IN',
     },
     areaServed: [l.name, 'Delhi NCR'],
     openingHoursSpecification: hours,
-    hasMap: `https://www.google.com/maps/search/${encodeURIComponent(`${s.clinicName} ${l.address}`)}`,
+    geo: l.latitude != null && l.longitude != null ? { '@type': 'GeoCoordinates', latitude: l.latitude, longitude: l.longitude } : undefined,
+    hasMap: l.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${s.clinicName} ${l.address}`)}`,
     sameAs: sameAs.length ? sameAs : undefined,
   }));
   const website = {

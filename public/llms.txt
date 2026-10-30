@@ -1,12 +1,12 @@
 # Reviva Skin & Surgery Clinic
 
-> Dermatologist-led skin, hair, laser and aesthetic clinic with two locations in Delhi NCR: Sector 76, Noida (Amrapali Silicon City) and Raj Nagar Extension, Ghaziabad (Quantum Homes). Led by Dr. Aarushi Tyagi.
+> Dermatologist-led skin, hair, laser and aesthetic clinic with two locations in Delhi NCR: Sector 76, Noida (Amarpali Silicon City) and Raj Nagar Extension, Ghaziabad (Quantum Homes). Led by Dr. Aarushi Tyagi.
 
 Website: https://revivaskinandsurgery.com/
 
 ## Clinics
-- [Noida clinic](https://revivaskinandsurgery.com/noida): Amrapali Silicon City, Gate No. 4, Sector 76, Noida. Phone +91 85958 56844
-- [Ghaziabad clinic](https://revivaskinandsurgery.com/ghaziabad): Quantum Homes, Raj Nagar Extension, Ghaziabad 201017. Phone +91 78274 48711
+- [Noida clinic](https://revivaskinandsurgery.com/noida): Gate No 4, Shop No 14 Ground Floor, Market, Amarpali Silicon City, Sector 76, Noida, Uttar Pradesh 201316. Phone +91 85958 56844
+- [Ghaziabad clinic](https://revivaskinandsurgery.com/ghaziabad): Shop No.S-1, ground floor, quantum homes, Raj Nagar Extension, Ghaziabad, Uttar Pradesh 201003. Phone +91 78274 48711
 - Hours: Mon–Sat, 11:00 AM – 1:00 PM and 5:00 PM – 7:30 PM
 
 ## Main pages

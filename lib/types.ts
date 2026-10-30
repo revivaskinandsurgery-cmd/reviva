@@ -11,7 +11,7 @@ export type NavColumn = {
 
 export type NavItem = { label: string; href?: string; columns?: NavColumn[] };
 
-export type Location = { name: string; address: string; phoneDisplay: string; phoneTel: string };
+export type Location = { name: string; address: string; phoneDisplay: string; phoneTel: string; /** Google Maps link of the clinic (opens the Google listing). */ mapUrl?: string; latitude?: number; longitude?: number };
 
 export type SiteSettings = {
   logo: string;

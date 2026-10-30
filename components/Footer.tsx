@@ -64,7 +64,11 @@ export default function Footer({ s }: { s: SiteSettings }) {
             {s.locations.map((loc) => (
               <div className="rv-location" key={loc.name}>
                 <h4>{loc.name}</h4>
-                <p>{loc.address}</p>
+                <p>
+                  <a href={loc.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${s.clinicName} ${loc.address}`)}`} target="_blank" rel="noopener" aria-label={`${loc.name} clinic on Google Maps`}>
+                    {loc.address}
+                  </a>
+                </p>
                 <a className="rv-contact-link" href={`tel:${loc.phoneTel}`}>
                   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={PHONE_ICON} stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
                   {loc.phoneDisplay}

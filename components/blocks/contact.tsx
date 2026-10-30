@@ -64,7 +64,9 @@ export function ContactSection({ b }: { b: ContactSectionBlock }) {
               <div>
                 <span>{d.label}</span>
                 {d.href ? (
-                  <a href={d.href}>{d.value}</a>
+                  <a href={d.href} {...(/^https?:/.test(d.href) ? { target: '_blank', rel: 'noopener' } : {})}>
+                    {d.value}
+                  </a>
                 ) : (
                   <p>
                     <Lines text={d.value} />

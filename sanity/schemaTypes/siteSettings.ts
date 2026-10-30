@@ -107,7 +107,10 @@ export const siteSettings = defineType({
           name: 'location',
           fields: [
             defineField({ name: 'name', type: 'string' }),
-            defineField({ name: 'address', type: 'text', rows: 2 }),
+            defineField({ name: 'address', type: 'text', rows: 2, description: 'Exactly as in the Google Business Profile.' }),
+            defineField({ name: 'mapUrl', title: 'Google Maps link', type: 'url', description: 'In Google Maps open the clinic, click Share and paste the link (maps.app.goo.gl/...). The address on the website opens it.' }),
+            defineField({ name: 'latitude', title: 'Latitude (for Google)', type: 'number' }),
+            defineField({ name: 'longitude', title: 'Longitude (for Google)', type: 'number' }),
             defineField({ name: 'phoneDisplay', title: 'Phone (shown)', type: 'string' }),
             defineField({ name: 'phoneTel', title: 'Phone (dialled)', type: 'string' }),
           ],

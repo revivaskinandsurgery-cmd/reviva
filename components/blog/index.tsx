@@ -33,6 +33,8 @@ export type Post = {
   hideFromBlog?: boolean;
   relatedPageIds?: string[];
   faqs?: { _key: string; question?: string; answer?: string }[];
+  /** Treatment pages the editor chose for this article. */
+  treatments?: { label: string; path: string }[];
   _updatedAt?: string;
 };
 export type PostCard = Pick<Post, 'title' | 'path' | 'publishedAt' | 'readMinutes' | 'excerpt' | 'cover'> & { _id?: string; relatedPageIds?: string[]; tags?: string[] };
@@ -250,6 +252,7 @@ export function PostView({ post, s, latest, prev, next, related = [] }: { post: 
   const quick = modern && first && first._type === 'block' && (first as { style?: string }).style === 'normal' ? first : null;
   const main = quick ? rest : body;
   const faqs = (post.faqs ?? []).filter((q) => q.question && q.answer);
+  const treatments = (post.treatments ?? []).filter((t) => t && t.path);
   const toc = [...(modern ? outline(main) : []), ...(modern && faqs.length ? [{ id: 'faq', text: 'Frequently asked questions' }] : [])];
   const article = (
     <>
@@ -307,6 +310,26 @@ export function PostView({ post, s, latest, prev, next, related = [] }: { post: 
             </details>
           ))}
         </section>
+      ) : null}
+      {treatments.length ? (
+        <aside className="rv-tx" aria-labelledby="rv-tx-title">
+          <h2 className="rv-tx__title" id="rv-tx-title">
+            Treatments related to this article
+          </h2>
+          <ul className="rv-tx__list">
+            {treatments.map((t) => (
+              <li key={t.path}>
+                <a href={t.path}>
+                  {t.label.split(' | ')[0]}
+                  <ArrowRight />
+                </a>
+              </li>
+            ))}
+          </ul>
+          <a className="rv-tx__book" href={s.bookUrl || '/contact'}>
+            {s.bookLabel || 'Book a consultation'}
+          </a>
+        </aside>
       ) : null}
       {modern ? <Related cards={related} /> : null}
       <PostEnd s={s} prev={prev} next={next} />

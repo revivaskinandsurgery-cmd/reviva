@@ -79,10 +79,13 @@ export async function POST(req: NextRequest) {
   if (!/^[6-9]\d{9}$/.test(phone)) errors.push('Please enter a valid 10-digit mobile number.');
   if (errors.length) return respond(false, errors.join(' '));
 
-  // Junk is kept (status "spam", never emailed) so a real lead wrongly caught
-  // can still be found under Enquiries → Spam.
+  // Keyboard-mash: answer as if it worked, store and email nothing. The reason
+  // goes to the server log only, so a wrongly caught lead can be traced there.
   const spamReason = junkReason(name, field('email', 190), field('message', 4000));
-  if (spamReason) console.warn('Enquiry marked spam:', spamReason, name, phone);
+  if (spamReason) {
+    console.warn('Enquiry dropped as junk:', spamReason, '|', name, '|', phone);
+    return respond(true, 'Thank you! We will call you shortly.');
+  }
 
   const doc = {
     _type: 'enquiry',
@@ -91,8 +94,7 @@ export async function POST(req: NextRequest) {
     email: field('email', 190) || undefined,
     concern: field('concern', 190) || undefined,
     message: field('message', 4000) || undefined,
-    status: spamReason ? 'spam' : 'new',
-    spamReason: spamReason ?? undefined,
+    status: 'new',
     sourcePage: field('source_page') || req.headers.get('referer') || undefined,
     tracking: Object.fromEntries(TRACKING.map((k) => [k, field(k) || undefined])),
     submittedAt: new Date().toISOString(),
@@ -106,8 +108,6 @@ export async function POST(req: NextRequest) {
     console.error('Enquiry save failed', e);
     return respond(false, 'Something went wrong saving your request. Please call us instead.');
   }
-
-  if (spamReason) return respond(true, 'Thank you! We will call you shortly.');
 
   const to = process.env.LEAD_EMAIL;
   if (to && process.env.RESEND_API_KEY) {

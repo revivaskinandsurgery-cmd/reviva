@@ -1,8 +1,7 @@
 import { defineField, defineType } from 'sanity';
 import { EnvelopeIcon } from '@sanity/icons/Envelope';
 
-// "spam": junk caught by /api/enquiry; kept so a wrongly caught lead can be found.
-export const STATUSES = ['new', 'contacted', 'booked', 'closed', 'spam'] as const;
+export const STATUSES = ['new', 'contacted', 'booked', 'closed'] as const;
 export type Status = (typeof STATUSES)[number];
 
 /* Leads from the contact form (POST /api/enquiry; replaces the old MySQL enquiries table).
@@ -38,7 +37,6 @@ export const enquiry = defineType({
       group: 'lead',
       description: 'Call outcome, appointment details… Never shown on the website.',
     }),
-    defineField({ name: 'spamReason', title: 'Why marked spam', type: 'string', readOnly: true, group: 'lead', hidden: ({ document }) => !document?.spamReason }),
     defineField({ name: 'submittedAt', type: 'datetime', readOnly: true, group: 'lead' }),
     defineField({ name: 'sourcePage', title: 'Source page', type: 'string', readOnly: true, group: 'tracking' }),
     defineField({

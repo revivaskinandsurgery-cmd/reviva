@@ -35,6 +35,7 @@ const asciiDigits = (s: string) =>
 function junkReason(name: string, email: string, message: string) {
   const midCaps = name.slice(1).replace(/[^A-Z]/g, '').length;
   if (!/\s/.test(name) && name.length >= 15 && midCaps >= 3) return 'name looks random';
+  if (/[bcdfghjklmnpqrstvwxz]{6,}/i.test(name)) return 'name has 6+ consonants in a row';
   if (/[A-Za-z]{20,}/.test(message)) return 'message has a 20+ letter "word"';
   if ((email.split('@')[0].match(/\./g) ?? []).length >= 4) return 'email has 4+ dots before @';
   return null;

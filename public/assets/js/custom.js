@@ -389,6 +389,21 @@
     if (!sessionStorage.getItem('rv_referrer')) { sessionStorage.setItem('rv_referrer', document.referrer || ''); }
   } catch (err) { /* storage blocked: tracking is optional */ }
 
+  // Phone box: only digits can be typed (Hindi digits become 0-9), at most 10;
+  // a pasted +91 / 0 prefix is dropped.
+  function cleanPhone(v) {
+    var d = v.replace(/[०-९]/g, function (c) { return String(c.charCodeAt(0) - 0x966); }).replace(/\D/g, '');
+    if (d.length === 12 && d.indexOf('91') === 0) { d = d.slice(2); }
+    else if (d.length === 11 && d.charAt(0) === '0') { d = d.slice(1); }
+    return d.slice(0, 10);
+  }
+  $$('form.contact-form input[name="phone"]').forEach(function (input) {
+    input.addEventListener('input', function () {
+      var c = cleanPhone(input.value);
+      if (c !== input.value) { input.value = c; }
+    });
+  });
+
   $$('form.contact-form').forEach(function (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();

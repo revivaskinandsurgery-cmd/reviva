@@ -25,6 +25,14 @@ export function ClinicFaqList({ items }: { items: { key: string; question: strin
 
 const TRACKING = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid'];
 
+/** Phone box: digits only (Hindi digits become 0-9), at most 10; a pasted +91 / 0 prefix is dropped. */
+function cleanPhone(v: string) {
+  let d = v.replace(/[०-९]/g, (c) => String(c.charCodeAt(0) - 0x966)).replace(/\D/g, '');
+  if (d.length === 12 && d.startsWith('91')) d = d.slice(2);
+  else if (d.length === 11 && d.startsWith('0')) d = d.slice(1);
+  return d.slice(0, 10);
+}
+
 /** Booking form: sends the lead to /api/enquiry (Studio → Enquiries). */
 export function ClinicBookingForm(p: { namePlaceholder: string; phonePlaceholder: string; concernPlaceholder: string; concerns: string[]; buttonLabel: string }) {
   const [sending, setSending] = useState(false);
@@ -65,7 +73,17 @@ export function ClinicBookingForm(p: { namePlaceholder: string; phonePlaceholder
           <input type="text" name="full_name" placeholder={p.namePlaceholder} required />
         </div>
         <div className="form-group">
-          <input type="tel" name="phone" placeholder={p.phonePlaceholder} required />
+          <input
+            type="tel"
+            name="phone"
+            inputMode="numeric"
+            autoComplete="tel-national"
+            pattern="[6-9][0-9]{9}"
+            title="Enter a 10-digit mobile number starting with 6, 7, 8 or 9"
+            placeholder={p.phonePlaceholder}
+            onChange={(e) => (e.currentTarget.value = cleanPhone(e.currentTarget.value))}
+            required
+          />
         </div>
       </div>
       <div className="form-group">

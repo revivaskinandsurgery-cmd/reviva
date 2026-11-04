@@ -34,7 +34,7 @@ export function ContactSection({ b }: { b: ContactSectionBlock }) {
             <div className="form-row">
               <div className="form-group">
                 <label>{l.phone}</label>
-                <input type="tel" name="phone" inputMode="numeric" autoComplete="tel-national" pattern="[6-9][0-9]{9}" title="Enter a 10-digit mobile number starting with 6, 7, 8 or 9" required />
+                <input type="tel" name="phone" inputMode="numeric" autoComplete="tel-national" pattern="[0-9]{10}" title="Enter a 10-digit mobile number" required />
               </div>
               <div className="form-group">
                 <label>{l.email}</label>

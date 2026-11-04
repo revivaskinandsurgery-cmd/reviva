@@ -78,8 +78,8 @@ export function ClinicBookingForm(p: { namePlaceholder: string; phonePlaceholder
             name="phone"
             inputMode="numeric"
             autoComplete="tel-national"
-            pattern="[6-9][0-9]{9}"
-            title="Enter a 10-digit mobile number starting with 6, 7, 8 or 9"
+            pattern="[0-9]{10}"
+            title="Enter a 10-digit mobile number"
             placeholder={p.phonePlaceholder}
             onChange={(e) => (e.currentTarget.value = cleanPhone(e.currentTarget.value))}
             required

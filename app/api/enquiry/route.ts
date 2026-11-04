@@ -35,7 +35,6 @@ const asciiDigits = (s: string) =>
 function junkReason(name: string, email: string, message: string) {
   const midCaps = name.slice(1).replace(/[^A-Z]/g, '').length;
   if (!/\s/.test(name) && name.length >= 15 && midCaps >= 3) return 'name looks random';
-  if (/[bcdfghjklmnpqrstvwxz]{6,}/i.test(name)) return 'name has 6+ consonants in a row';
   if (/[A-Za-z]{20,}/.test(message)) return 'message has a 20+ letter "word"';
   if ((email.split('@')[0].match(/\./g) ?? []).length >= 4) return 'email has 4+ dots before @';
   return null;
@@ -61,9 +60,9 @@ export async function POST(req: NextRequest) {
   // Cut by whole characters so an emoji is never split in half.
   const field = (k: string, max = 500) => Array.from(String(form.get(k) ?? '').trim()).slice(0, max).join('');
 
-  // Honeypot: a hidden input people never see. Bots fill every field; answer as
-  // if it worked and store nothing.
-  if (field('hp_site') || field('website')) return respond(true, 'Thank you.');
+  // Honeypot: a hidden input people never see. Bots fill every field; they are
+  // answered as if it worked and stored as "spam" (see below).
+  const honeypot = Boolean(field('hp_site') || field('website'));
 
   const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown';
   if (rateLimited(ip)) {
@@ -77,16 +76,13 @@ export async function POST(req: NextRequest) {
 
   const errors: string[] = [];
   if (name.length < 2) errors.push('Please enter your name.');
-  if (!/^[6-9]\d{9}$/.test(phone)) errors.push('Please enter a valid 10-digit mobile number.');
-  if (errors.length) return respond(false, errors.join(' '));
+  if (!/^\d{10}$/.test(phone)) errors.push('Please enter a valid 10-digit mobile number.');
+  if (errors.length && !honeypot) return respond(false, errors.join(' '));
 
-  // Keyboard-mash: answer as if it worked, store and email nothing. The reason
-  // goes to the server log only, so a wrongly caught lead can be traced there.
-  const spamReason = junkReason(name, field('email', 190), field('message', 4000));
-  if (spamReason) {
-    console.warn('Enquiry dropped as junk:', spamReason, '|', name, '|', phone);
-    return respond(true, 'Thank you! We will call you shortly.');
-  }
+  // Bots and keyboard-mash are saved with status "spam" (shown under Enquiries →
+  // Spam, never emailed) and answered as if it worked.
+  const spamReason = honeypot ? 'hidden trap field filled (bot)' : junkReason(name, field('email', 190), field('message', 4000));
+  if (spamReason) console.warn('Enquiry marked spam:', spamReason, '|', name, '|', phone);
 
   const doc = {
     _type: 'enquiry',
@@ -95,7 +91,8 @@ export async function POST(req: NextRequest) {
     email: field('email', 190) || undefined,
     concern: field('concern', 190) || undefined,
     message: field('message', 4000) || undefined,
-    status: 'new',
+    status: spamReason ? 'spam' : 'new',
+    spamReason: spamReason ?? undefined,
     sourcePage: field('source_page') || req.headers.get('referer') || undefined,
     tracking: Object.fromEntries(TRACKING.map((k) => [k, field(k) || undefined])),
     submittedAt: new Date().toISOString(),
@@ -109,6 +106,8 @@ export async function POST(req: NextRequest) {
     console.error('Enquiry save failed', e);
     return respond(false, 'Something went wrong saving your request. Please call us instead.');
   }
+
+  if (spamReason) return respond(true, 'Thank you! We will call you shortly.');
 
   const to = process.env.LEAD_EMAIL;
   if (to && process.env.RESEND_API_KEY) {

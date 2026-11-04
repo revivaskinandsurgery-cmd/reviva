@@ -23,6 +23,10 @@ export function ContactSection({ b }: { b: ContactSectionBlock }) {
         <div className="contact-form-wrapper">
           <h2>{b.formTitle}</h2>
           <form className="contact-form" action="/api/enquiry" method="POST">
+            {/* Honeypot: invisible to people, filled in by bots (see /api/enquiry). */}
+            <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
+              <input type="text" name="hp_site" tabIndex={-1} autoComplete="off" defaultValue="" />
+            </div>
             <div className="form-group full">
               <label>{l.name}</label>
               <input type="text" name="full_name" required />

@@ -33,6 +33,7 @@ const TONE: Record<Status, 'critical' | 'caution' | 'positive' | 'default'> = {
   contacted: 'caution',
   booked: 'positive',
   closed: 'default',
+  spam: 'default',
 };
 
 const when = (e: Enquiry) => new Date(e.submittedAt ?? e._createdAt);
@@ -79,7 +80,7 @@ export function EnquiriesTool() {
   }, [client]);
 
   const stats = useMemo(() => {
-    const all = rows ?? [];
+    const all = (rows ?? []).filter((e) => e.status !== 'spam');
     const today = startOfDay();
     const week = new Date(today.getTime() - 6 * 864e5);
     const month = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -101,7 +102,7 @@ export function EnquiriesTool() {
       const st = e.status ?? 'new';
       if (filter === 'followup') {
         if (!e.followUpOn || new Date(e.followUpOn) > now || st === 'closed' || st === 'booked') return false;
-      } else if (filter !== 'all' && st !== filter) return false;
+      } else if (filter === 'all' ? st === 'spam' : st !== filter) return false;
       if (!term) return true;
       return [e.name, e.phone, e.email, e.concern, e.message].some((v) => v?.toLowerCase().includes(term));
     });

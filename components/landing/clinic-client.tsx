@@ -56,6 +56,10 @@ export function ClinicBookingForm(p: { namePlaceholder: string; phonePlaceholder
       onSubmit={submit}
       style={{ background: 'white', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '32px', boxShadow: 'var(--shadow)', marginBottom: '28px' }}
     >
+      {/* Honeypot: invisible to people, filled in by bots (see /api/enquiry). */}
+      <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
+        <input type="text" name="hp_site" tabIndex={-1} autoComplete="off" defaultValue="" />
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
         <div className="form-group">
           <input type="text" name="full_name" placeholder={p.namePlaceholder} required />

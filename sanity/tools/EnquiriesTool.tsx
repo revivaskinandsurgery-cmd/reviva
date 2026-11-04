@@ -4,6 +4,7 @@ import { IntentLink } from 'sanity/router';
 import { Badge, Box, Button, Card, Flex, Grid, Select, Stack, Text, TextInput } from '@sanity/ui';
 import { DownloadIcon } from '@sanity/icons/Download';
 import { SearchIcon } from '@sanity/icons/Search';
+import { TrashIcon } from '@sanity/icons/Trash';
 import { apiVersion } from '../../lib/sanity-env';
 import { STATUSES, type Status } from '../schemaTypes/enquiry';
 
@@ -111,6 +112,16 @@ export function EnquiriesTool() {
     client.patch(id).set({ status }).commit().catch((e) => setError(String(e.message ?? e)));
   };
 
+  // Removes the published enquiry and any draft of it (permanent).
+  const remove = (list: Enquiry[], what: string) => {
+    if (!list.length || !window.confirm(`Permanently delete ${what}? This cannot be undone.`)) return;
+    const ids = new Set(list.map((e) => e._id));
+    setRows((r) => r && r.filter((e) => !ids.has(e._id)));
+    const tx = client.transaction();
+    ids.forEach((id) => tx.delete(id).delete(`drafts.${id}`));
+    tx.commit().catch((e) => setError(String(e.message ?? e)));
+  };
+
   const exportCsv = () => {
     const url = URL.createObjectURL(new Blob(['﻿' + toCsv(shown)], { type: 'text/csv;charset=utf-8' }));
     const a = Object.assign(document.createElement('a'), { href: url, download: `enquiries-${new Date().toISOString().slice(0, 10)}.csv` });
@@ -143,6 +154,9 @@ export function EnquiriesTool() {
           <Box flex={1} style={{ minWidth: 200 }}>
             <TextInput icon={SearchIcon} placeholder="Search name, phone, concern…" value={q} onChange={(e) => setQ(e.currentTarget.value)} />
           </Box>
+          {filter === 'closed' && shown.length ? (
+            <Button icon={TrashIcon} mode="ghost" tone="critical" text={`Delete all ${shown.length} shown`} onClick={() => remove(shown, `${shown.length} closed enquiries`)} />
+          ) : null}
           <Button icon={DownloadIcon} mode="ghost" text="Export CSV" onClick={exportCsv} disabled={!shown.length} />
         </Flex>
 
@@ -186,7 +200,10 @@ export function EnquiriesTool() {
                       <Select value={st} onChange={(ev) => setStatus(e._id, ev.currentTarget.value as Status)} fontSize={1}>
                         {STATUSES.map((s) => <option key={s} value={s}>{label(s)}</option>)}
                       </Select>
-                      <Text size={1}><IntentLink intent="edit" params={{ id: e._id, type: 'enquiry' }}>Notes & details →</IntentLink></Text>
+                      <Flex gap={3} align="center" justify="space-between">
+                        <Text size={1}><IntentLink intent="edit" params={{ id: e._id, type: 'enquiry' }}>Notes & details →</IntentLink></Text>
+                        <Button icon={TrashIcon} mode="bleed" tone="critical" padding={2} title="Delete enquiry" aria-label="Delete enquiry" onClick={() => remove([e], `the enquiry from ${e.name || 'this person'}`)} />
+                      </Flex>
                     </Stack>
                   </Grid>
                 </Card>

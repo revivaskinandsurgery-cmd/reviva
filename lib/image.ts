@@ -24,7 +24,7 @@ export function absoluteImage(p: Picture | null | undefined, site: string): stri
 
 /** width / height of a picture (read from the asset id, so no extra request), so the browser reserves its space and the page does not jump. */
 export function pictureSize(p?: Picture | null): { width?: number; height?: number } {
-  const m = (p?.image?.asset?._ref ?? p?.originalAssetId)?.match(/-(\d+)x(\d+)-\w+$/);
+  const m = (p?.image?.asset?._ref ?? p?.originalAssetId)?.match(/-(\d+)x(\d+)-\w+$/) ?? pictureSrc(p)?.match(/-(\d+)x(\d+)\.\w+(\?|$)/);
   return m ? { width: Number(m[1]), height: Number(m[2]) } : {};
 }
 

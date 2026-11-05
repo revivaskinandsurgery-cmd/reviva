@@ -1,5 +1,5 @@
 import { Inline, Lines, Rich, type Block, type RichValue } from '@/lib/rich';
-import { pictureSrc, type Picture } from '@/lib/image';
+import { pictureSize, pictureSrc, type Picture } from '@/lib/image';
 import { GalleryFilterBar, GalleryPhotos } from '@/components/gallery';
 
 /* Heroes, galleries and legal pages. Original markup and class names. */
@@ -85,5 +85,5 @@ export function GalleryFilters({ b }: { b: GalleryFiltersBlock }) {
 
 export type GalleryGridBlock = { _type: 'galleryGrid'; _key: string; photos?: (Picture & { _key: string })[] };
 export function GalleryGrid({ b }: { b: GalleryGridBlock }) {
-  return <GalleryPhotos photos={(b.photos ?? []).map((p) => ({ key: p._key, src: pictureSrc(p) ?? '', alt: p.alt ?? '' })).filter((p) => p.src)} />;
+  return <GalleryPhotos photos={(b.photos ?? []).map((p) => ({ key: p._key, src: pictureSrc(p) ?? '', alt: p.alt ?? '', ...pictureSize(p) })).filter((p) => p.src)} />;
 }

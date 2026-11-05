@@ -1,5 +1,5 @@
 import { createElement, Fragment, type ReactNode } from 'react';
-import { pictureSrc, type Picture } from './image';
+import { pictureSize, pictureSrc, type Picture } from './image';
 
 /* Sanity rich text (Portable Text) -> React, written for this site's markup:
    paragraph styles map to the original tags/classes, links and "styled"
@@ -120,7 +120,7 @@ export function Rich({ value }: { value?: RichValue }) {
     const b = blocks[i];
     if (b._type === 'figure') {
       const f = b as Figure;
-      const img = <img key={f._key} src={pictureSrc(f)} alt={f.alt ?? ''} className={f.className} />;
+      const img = <img key={f._key} src={pictureSrc(f)} alt={f.alt ?? ''} className={f.className} {...pictureSize(f)} loading="lazy" decoding="async" />;
       out.push(f.caption ? <figure key={f._key}>{img}<figcaption>{f.caption}</figcaption></figure> : img);
       continue;
     }

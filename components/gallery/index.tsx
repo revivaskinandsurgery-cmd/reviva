@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
    full-screen (arrows, swipe, Esc). Styles: public/assets/css/gallery.css. */
 
 type Link = { key: string; label: string; href: string };
-type Photo = { key: string; src: string; alt: string };
+type Photo = { key: string; src: string; alt: string; width?: number; height?: number };
 
 const clean = (p: string) => p.replace(/\/+$/, '') || '/';
 
@@ -61,7 +61,7 @@ export function GalleryPhotos({ photos }: { photos: Photo[] }) {
         {photos.map((p, i) => (
           <li key={p.key}>
             <button type="button" className="rv-gallery__card" onClick={() => setOpen(i)} aria-label={`Enlarge result ${i + 1} of ${photos.length}`}>
-              <img src={p.src} alt={p.alt || `Before and after result ${i + 1}`} loading={i < 6 ? 'eager' : 'lazy'} decoding="async" />
+              <img src={p.src} alt={p.alt || `Before and after result ${i + 1}`} width={p.width} height={p.height} loading={i < 6 ? 'eager' : 'lazy'} decoding="async" />
             </button>
           </li>
         ))}

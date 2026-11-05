@@ -14,6 +14,10 @@ export const plainText = (blocks?: RichValue) =>
     .replace(/\s+/g, ' ')
     .trim();
 
+/** The doctor, named exactly as on the site (Site Settings and the pages use this name only). */
+export const DOCTOR_NAME = 'Dr. Aarushi Tyagi';
+export const doctorId = (site: string) => `${site}/#dr-aarushi-tyagi`;
+
 export const clinicId = (site: string, name: string) => `${site}/#${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
 /** The business: one MedicalClinic per location, plus the WebSite. */
@@ -40,6 +44,7 @@ export function siteGraph(s: SiteSettings, site: string, logo?: string): Json[] 
       addressCountry: 'IN',
     },
     areaServed: [l.name, 'Delhi NCR'],
+    physician: { '@id': doctorId(site) },
     openingHoursSpecification: openingHoursSpec(l.hours || s.hours),
     geo: l.latitude != null && l.longitude != null ? { '@type': 'GeoCoordinates', latitude: l.latitude, longitude: l.longitude } : undefined,
     hasMap: l.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${s.clinicName} ${l.address}`)}`,
@@ -54,7 +59,16 @@ export function siteGraph(s: SiteSettings, site: string, logo?: string): Json[] 
     inLanguage: 'en-IN',
     publisher: s.locations[0] ? { '@id': clinicId(site, s.locations[0].name) } : undefined,
   };
-  return [...clinics, website];
+  const doctor = {
+    '@context': 'https://schema.org',
+    '@type': 'Physician',
+    '@id': doctorId(site),
+    name: DOCTOR_NAME,
+    medicalSpecialty: 'Dermatology',
+    url: site + '/about',
+    worksFor: s.locations.map((l) => ({ '@id': clinicId(site, l.name) })),
+  };
+  return [...clinics, doctor, website];
 }
 
 /** The main pages of the site (menu + both clinics), so Google knows what the key sections are. */
@@ -126,4 +140,36 @@ export function service(s: SiteSettings, site: string, p: { url: string; name: s
     provider: s.locations.map((l) => ({ '@id': clinicId(site, l.name) })),
     areaServed: [...s.locations.map((l) => l.name), 'Delhi NCR'],
   };
+}
+
+/** A treatment page as a medical web page, with the clinic's doctor as the reviewer. */
+export function medicalWebPage(site: string, p: { url: string; name: string; description?: string; modified?: string }): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalWebPage',
+    '@id': `${p.url}#webpage`,
+    url: p.url,
+    name: p.name,
+    description: p.description,
+    dateModified: p.modified,
+    inLanguage: 'en-IN',
+    reviewedBy: { '@id': doctorId(site) },
+    isPartOf: { '@id': `${site}/#website` },
+  };
+}
+
+/** A picture's alt text, unless it is just the post's slug (which some imported pictures have). */
+export const usableAlt = (alt: string | undefined, fallback: string) => (alt && (/\s/.test(alt.trim()) || !alt.includes('-')) ? alt : fallback);
+
+/** A meta description of at most 155 characters that ends at a sentence or a whole word (never mid-phrase, never "..."). */
+export function tidyDescription(text?: string): string | undefined {
+  const t = text?.replace(/\s+/g, ' ').trim();
+  if (!t) return undefined;
+  if (t.length <= 155 && /[.!?]$/.test(t)) return t;
+  const cut = t.slice(0, 155);
+  // Descriptions that were cut off mid-sentence go back to the last full sentence.
+  const sentence = cut.search(/[.!?](?=[^.!?]*$)/);
+  if (sentence >= 70) return cut.slice(0, sentence + 1);
+  const words = (t.length <= 155 ? cut : cut.slice(0, cut.lastIndexOf(' '))).replace(/[\s,;:\-–—.…]+$/, '');
+  return words + '.';
 }

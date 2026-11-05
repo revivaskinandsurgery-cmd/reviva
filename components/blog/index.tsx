@@ -1,6 +1,7 @@
 import { outline, Rich, type RichValue } from '@/lib/rich';
 import { pictureSrc, type Picture } from '@/lib/image';
 import type { SiteSettings } from '@/lib/types';
+import { usableAlt } from '@/lib/seo';
 import { LoadMore } from './LoadMore';
 
 /* Blog posts, the blog index and the parts every post shares (consultation
@@ -232,7 +233,7 @@ export function PostView({ post, s, latest, prev, next, related = [] }: { post: 
   const d = post.design ?? {};
   const long = d.outer !== 'main-wrapper' && d.image === 'featured';
   const src = pictureSrc(post.cover);
-  const alt = post.cover?.alt;
+  const alt = usableAlt(post.cover?.alt, post.title);
   const image =
     !src ? null : d.image === 'wrapped' ? (
       <div className="blog-image">
@@ -246,9 +247,12 @@ export function PostView({ post, s, latest, prev, next, related = [] }: { post: 
   // Posts shown on the blog get the newer layout: breadcrumb, quick answer, "On this page", related articles.
   const modern = post.hideFromBlog !== true;
   const body = post.body ?? [];
-  const [first, ...rest] = body;
-  const quick = modern && first && first._type === 'block' && (first as { style?: string }).style === 'normal' ? first : null;
-  const main = quick ? rest : body;
+  // The quick answer is the first real paragraph: a leading "By <author>" line is not an answer.
+  const isByline = (b: (typeof body)[number]) => b._type === 'block' && /^By\s/.test(((b as { children?: { text?: string }[] }).children ?? []).map((c) => c.text ?? '').join('').trim());
+  const at = modern ? body.findIndex((b) => !isByline(b)) : -1;
+  const first = at >= 0 ? body[at] : undefined;
+  const quick = first && first._type === 'block' && (first as { style?: string }).style === 'normal' ? first : null;
+  const main = quick ? body.filter((b) => b !== quick) : body;
   const faqs = (post.faqs ?? []).filter((q) => q.question && q.answer);
   const toc = [...(modern ? outline(main) : []), ...(modern && faqs.length ? [{ id: 'faq', text: 'Frequently asked questions' }] : [])];
   const article = (

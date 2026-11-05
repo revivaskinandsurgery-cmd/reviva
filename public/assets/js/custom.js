@@ -428,6 +428,7 @@
         })
         .then(function (r) {
           if (r.ok) {
+            track('generate_lead', { form: 'contact' });
             window.alert(r.message || 'Thank you! We will call you shortly.');
             form.reset();
           } else {
@@ -441,6 +442,26 @@
           if (button) { button.disabled = false; }
         });
     });
+  });
+
+  /* ------------------------------------------------------------------
+     Tracking events for Google Tag Manager / GA4 (window.dataLayer):
+     phone_click, whatsapp_click, book_click and generate_lead (form sent).
+     ------------------------------------------------------------------ */
+  function track(name, extra) {
+    window.dataLayer = window.dataLayer || [];
+    var payload = { event: name, page_path: window.location.pathname };
+    for (var k in extra) { if (extra.hasOwnProperty(k)) { payload[k] = extra[k]; } }
+    window.dataLayer.push(payload);
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) { return; }
+    var href = a.getAttribute('href') || '';
+    var label = (a.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+    if (/^tel:/i.test(href)) { track('phone_click', { phone_number: href.replace(/^tel:/i, ''), link_text: label }); }
+    else if (/^https?:\/\/(wa\.me|api\.whatsapp\.com|web\.whatsapp\.com)\//i.test(href)) { track('whatsapp_click', { link_url: href, link_text: label }); }
+    else if (/^(https:\/\/revivaskinandsurgery\.com)?\/contact(\?|#|$)/i.test(href) || /\bbook\b/i.test(label)) { track('book_click', { link_url: href, link_text: label }); }
   });
 
 })();

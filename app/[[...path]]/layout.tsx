@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import { SiteScript } from '@/components/SiteScript';
 import { getDoc, getRedirect, getSettings, toUrlPath } from '@/lib/content';
 import { absoluteImage } from '@/lib/image';
-import { blogPosting, breadcrumbs, faqPage, plainText, service, siteGraph, siteNavigation } from '@/lib/seo';
+import { blogPosting, breadcrumbs, faqPage, medicalWebPage, plainText, service, siteGraph, siteNavigation, tidyDescription, usableAlt } from '@/lib/seo';
 import type { FaqList } from '@/lib/rich';
 import type { FaqBlock } from '@/components/blocks/treatment';
 
@@ -46,13 +46,13 @@ export async function generateMetadata({ params }: LayoutProps<'/[[...path]]'>):
   const post = doc.kind === 'post' ? doc : null;
   // A post is shared with its own cover picture unless it has a share image.
   const image = absoluteImage(doc.shareImage, site) ?? absoluteImage(post?.cover, site) ?? absoluteImage(s.shareImage, site);
-  const imageAlt = post?.cover?.alt || doc.title || s.clinicName;
+  const imageAlt = usableAlt(post?.cover?.alt, doc.title || s.clinicName);
+  const description = tidyDescription(doc.metaDescription);
   const xHandle = s.social.x?.match(/(?:x|twitter)[.]com[/]([A-Za-z0-9_]+)/)?.[1];
   return {
     metadataBase: new URL(site),
     title: doc.headTitle,
-    description: doc.metaDescription || undefined,
-    keywords: doc.keywords?.length ? doc.keywords : undefined,
+    description: description,
     authors: [{ name: s.clinicName, url: site }],
     publisher: s.clinicName,
     alternates: { canonical: url },
@@ -78,14 +78,14 @@ export async function generateMetadata({ params }: LayoutProps<'/[[...path]]'>):
       locale: 'en_IN',
       siteName: s.clinicName,
       title: doc.headTitle,
-      description: doc.metaDescription || undefined,
+      description: description,
       url,
       images: image ? [{ url: image, alt: imageAlt }] : undefined,
       ...(post
         ? { publishedTime: post.publishedAt, modifiedTime: post._updatedAt, authors: [s.clinicName], tags: post.keywords }
         : {}),
     },
-    twitter: { card: 'summary_large_image', ...(xHandle ? { site: `@${xHandle}`, creator: `@${xHandle}` } : {}), title: doc.headTitle, description: doc.metaDescription || undefined, images: image ? [image] : undefined },
+    twitter: { card: 'summary_large_image', ...(xHandle ? { site: `@${xHandle}`, creator: `@${xHandle}` } : {}), title: doc.headTitle, description: description, images: image ? [image] : undefined },
   };
 }
 
@@ -129,7 +129,10 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[[.
     const blocks = page.blocks ?? [];
     const faqs = blocks.filter((b) => b._type === 'faq').flatMap((b) => ((b as unknown as FaqBlock).items ?? []).map((i) => ({ question: i.question, answer: plainText(i.answer) })));
     jsonLd.push(breadcrumbs(site, [{ name: 'Home', path: '/' }, { name: shortName(page.title), path: urlPath }]), faqPage(faqs));
-    if (blocks.some((b) => b._type === 'serviceHero')) jsonLd.push(service(s, site, { url, name: shortName(page.title), description: page.metaDescription }));
+    if (blocks.some((b) => b._type === 'serviceHero')) {
+      const description = tidyDescription(page.metaDescription);
+      jsonLd.push(service(s, site, { url, name: shortName(page.title), description }), medicalWebPage(site, { url, name: shortName(page.title), description, modified: page._updatedAt }));
+    }
   }
 
   return (

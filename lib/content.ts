@@ -22,6 +22,7 @@ const SITEMAP_QUERY = defineQuery(`[
   ...*[_type == "page" && defined(path) && noindex != true]{ "path": path, "updatedAt": _updatedAt },
   ...*[_type == "post" && defined(slug.current) && noindex != true && hideFromBlog != true]{ "path": "/blog/" + slug.current, "updatedAt": _updatedAt }
 ]`);
+const PAGE_LIST_QUERY = defineQuery(`*[_type == "page" && defined(path) && noindex != true] | order(path){ path, title }`);
 const REDIRECT_QUERY = defineQuery(`*[_type == "redirect" && source in $paths][0].destination`);
 const SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0]{..., "logoImageUrl": logoImage.asset->url}`);
 const LANDING_QUERY = defineQuery(`*[_type == "landingPage" && slug.current == $slug][0]{ title, seoTitle, metaDescription, gtmId, design, sections }`);
@@ -81,6 +82,11 @@ export const getDoc = cache(async (urlPath: string) => {
 export async function getRedirect(urlPath: string): Promise<string | null> {
   const p = normalise(urlPath);
   return client.fetch<string | null>(REDIRECT_QUERY, { paths: [p, `${p}.html`, `${p}/index.html`] }, FETCH_OPTS);
+}
+
+/** Every indexable page's address and title (for /llms.txt). */
+export async function getPageList(): Promise<{ path: string; title: string }[]> {
+  return client.fetch<{ path: string; title: string }[]>(PAGE_LIST_QUERY, {}, FETCH_OPTS);
 }
 
 /** Every address for the sitemap, with its last edit. */

@@ -2,6 +2,7 @@ import { notFound, permanentRedirect } from 'next/navigation';
 import { getDoc, getPostCards, getRedirect, getSettings, toUrlPath } from '@/lib/content';
 import { Blocks, WhatsAppButton } from '@/components/blocks';
 import { PostView, RelatedPosts } from '@/components/blog';
+import { LocationDetails } from '@/components/blocks/location';
 
 /* The body between the shared header and footer: a blog post, or a page's
    sections. id="main" is the skip-link target. */
@@ -45,12 +46,15 @@ export default async function SitePage({ params }: PageProps<'/[[...path]]'>) {
 
   const posts = await getPostCards();
   // Any page an editor chose in a post shows "Related articles", even without that section in its page.
+  // /noida and /ghaziabad also show that clinic's address, phone, hours and map.
+  const place = settings.locations.find((l) => '/' + l.name.toLowerCase() === doc.path);
   const hasRelated = doc.blocks?.some((b) => b._type === 'relatedPosts');
   const attached = !hasRelated && posts.some((p) => p.relatedPageIds?.includes(doc._id));
   return (
     <div id="main" tabIndex={-1}>
       <div className="rv-scrim"></div>
       <Blocks blocks={doc.blocks} data={{ posts, pageId: doc._id }} />
+      {place ? <LocationDetails l={place} clinicName={settings.clinicName} /> : null}
       {attached ? <RelatedPosts b={{ _type: 'relatedPosts', _key: 'auto', heading: 'Related articles' }} posts={posts} pageId={doc._id} /> : null}
       {doc.whatsapp !== false ? <WhatsAppButton href={settings.whatsappUrl} /> : null}
     </div>

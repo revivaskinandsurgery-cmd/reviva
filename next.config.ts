@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      // Duplicate pages merged into the stronger one (the old pages are noindex in Sanity).
+      { source: '/laser-hair-removal', destination: '/laser-hair-reduction', statusCode: 301 as const },
+      { source: '/acne', destination: '/acne-treatment', statusCode: 301 as const },
+      { source: '/hifu-face-lift', destination: '/hifu-treatment-in-noida', statusCode: 301 as const },
       // Redirects edited in Sanity are applied at request time (app/[[...path]]/layout.tsx).
       ...LANDING_PAGES.map((name) => ({ source: `/lp/${name}/index.php`, destination: `/lp/${name}`, statusCode: 301 as const })),
     ];

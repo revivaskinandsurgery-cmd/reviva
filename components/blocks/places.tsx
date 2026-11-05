@@ -1,5 +1,5 @@
 import { Inline, Lines, Rich, type Block, type RichValue } from '@/lib/rich';
-import { pictureSrc, type Picture } from '@/lib/image';
+import { pictureSize, pictureSrc, type Picture } from '@/lib/image';
 
 /* Home hero, reviews, treatments index, the Noida / Ghaziabad clinic pages
    and the sitemap page. Original markup and class names. */
@@ -8,7 +8,7 @@ const Line = ({ value }: { value?: RichValue }) => {
   const block = value?.find((b) => b._type === 'block') as Block | undefined;
   return block ? <Inline block={block} /> : null;
 };
-const Img = ({ p }: { p?: Picture }) => <img src={pictureSrc(p)} alt={p?.alt ?? ''} />;
+const Img = ({ p }: { p?: Picture }) => <img src={pictureSrc(p)} alt={p?.alt ?? ''} {...pictureSize(p)} />;
 const num = (i: number) => String(i + 1).padStart(2, '0');
 
 type HeroButton = { label?: string; href?: string; newTab?: boolean };

@@ -1,6 +1,6 @@
 import { createElement, type CSSProperties, type ReactNode } from 'react';
 import { Inline, Lines, Rich, type Block, type MarkRenderers, type RichValue } from '@/lib/rich';
-import { pictureSrc, type Picture } from '@/lib/image';
+import { pictureSize, pictureSrc, type Picture } from '@/lib/image';
 import { ClinicFaqList, ClinicBookingForm } from './clinic-client';
 
 /* Landing page design "clinic" (/lp/skin-clinic-in-noida). Markup, classes
@@ -15,7 +15,7 @@ const Line = ({ value, marks }: { value?: RichValue; marks?: MarkRenderers }) =>
 const colour = (color: string, tag = 'span', extra: CSSProperties = {}): MarkRenderers => ({
   highlight: (children, key) => createElement(tag, { key, style: { ...extra, color } }, children),
 });
-const Img = ({ p, ...rest }: { p?: Picture } & Record<string, unknown>) => <img src={pictureSrc(p)} alt={p?.alt} {...rest} />;
+const Img = ({ p, ...rest }: { p?: Picture } & Record<string, unknown>) => <img src={pictureSrc(p)} alt={p?.alt} {...pictureSize(p)} {...rest} />;
 const blank = (href?: string) => (href && /^https?:/.test(href) ? { target: '_blank', rel: 'noopener' } : {});
 const PAD = { padding: '70px 5%' };
 

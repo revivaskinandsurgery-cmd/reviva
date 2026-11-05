@@ -1,5 +1,5 @@
 import { outline, Rich, type RichValue } from '@/lib/rich';
-import { pictureSrc, type Picture } from '@/lib/image';
+import { pictureSize, pictureSrc, type Picture } from '@/lib/image';
 import type { SiteSettings } from '@/lib/types';
 import { usableAlt } from '@/lib/seo';
 import { LoadMore } from './LoadMore';
@@ -234,15 +234,16 @@ export function PostView({ post, s, latest, prev, next, related = [] }: { post: 
   const long = d.outer !== 'main-wrapper' && d.image === 'featured';
   const src = pictureSrc(post.cover);
   const alt = usableAlt(post.cover?.alt, post.title);
+  const size = pictureSize(post.cover);
   const image =
     !src ? null : d.image === 'wrapped' ? (
       <div className="blog-image">
-        <img src={src} alt={alt} />
+        <img src={src} alt={alt} {...size} fetchPriority="high" />
       </div>
     ) : d.image === 'class' ? (
-      <img src={src} className="blog-image" alt={alt} />
+      <img src={src} className="blog-image" alt={alt} {...size} fetchPriority="high" />
     ) : (
-      <img src={src} className="featured-image" alt={alt} />
+      <img src={src} className="featured-image" alt={alt} {...size} fetchPriority="high" />
     );
   // Posts shown on the blog get the newer layout: breadcrumb, quick answer, "On this page", related articles.
   const modern = post.hideFromBlog !== true;

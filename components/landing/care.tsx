@@ -1,5 +1,5 @@
 import { Inline, type Block, type RichValue } from '@/lib/rich';
-import { pictureSrc, type Picture } from '@/lib/image';
+import { pictureSize, pictureSrc, type Picture } from '@/lib/image';
 
 /* Landing page design "care" (/lp/skin-care-clinic-in-noida): Bootstrap 5.3
    page with a before / after carousel. Markup and classes are the original
@@ -9,7 +9,7 @@ const Line = ({ value }: { value?: RichValue }) => {
   const block = value?.find((b) => b._type === 'block') as Block | undefined;
   return block ? <Inline block={block} /> : null;
 };
-const Img = ({ p, className }: { p?: Picture; className?: string }) => <img src={pictureSrc(p)} alt={p?.alt ?? ''} className={className} />;
+const Img = ({ p, className }: { p?: Picture; className?: string }) => <img src={pictureSrc(p)} alt={p?.alt ?? ''} className={className} {...pictureSize(p)} />;
 const ext = { target: '_blank', rel: 'noopener noreferrer' } as const;
 const poppins = { fontFamily: "'Poppins',sans-serif" };
 

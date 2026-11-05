@@ -7528,3 +7528,8 @@ body{
   border-top:1px solid rgba(217,177,114,.22);
 }
 .rv-panel__all:hover{ color:var(--rv-cream); text-decoration:underline; text-underline-offset:4px; }
+
+/* Images carry width/height attributes (no layout jump while loading); keep their proportions when the CSS only sets a width. Zero specificity, so any class that sets a height still wins. */
+:where(img[width][height]) {
+  height: auto;
+}

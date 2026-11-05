@@ -56,7 +56,7 @@ export default async function SitePage({ params }: PageProps<'/[[...path]]'>) {
       <Blocks blocks={doc.blocks} data={{ posts, pageId: doc._id }} />
       {place ? <LocationDetails l={place} clinicName={settings.clinicName} /> : null}
       {attached ? <RelatedPosts b={{ _type: 'relatedPosts', _key: 'auto', heading: 'Related articles' }} posts={posts} pageId={doc._id} /> : null}
-      {doc.whatsapp !== false ? <WhatsAppButton href={settings.whatsappUrl} /> : null}
+      {doc.whatsapp !== false ? <WhatsAppButton href={place ? `https://wa.me/${place.phoneTel.replace(/\D/g, '')}` : settings.whatsappUrl} /> : null}
     </div>
   );
 }

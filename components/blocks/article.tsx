@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { Inline, Rich, type Block, type RichValue } from '@/lib/rich';
-import { pictureSrc, type Picture } from '@/lib/image';
+import { pictureSize, pictureSrc, type Picture } from '@/lib/image';
 
 /* Long-form treatment / clinic pages (Home article, About, Acne, HIFU...).
    An article is a list of sections; each section has an optional small
@@ -111,7 +111,7 @@ function Item({ it }: { it: ArticleItem }) {
         )),
       );
     case 'articleImage':
-      return createElement(it.design?.tag ?? 'div', { className: it.design?.className }, <img src={pictureSrc(it.picture)} alt={it.picture?.alt ?? ''} />);
+      return createElement(it.design?.tag ?? 'div', { className: it.design?.className }, <img src={pictureSrc(it.picture)} alt={it.picture?.alt ?? ''} {...pictureSize(it.picture)} loading="lazy" decoding="async" />);
     case 'articleButton': {
       const d = it.design ?? {};
       const a = (
@@ -134,7 +134,7 @@ function Item({ it }: { it: ArticleItem }) {
         d.tag ?? 'div',
         { className: d.className },
         <div className={d.imageClass}>
-          <img src={pictureSrc(it.picture)} alt={it.picture?.alt ?? ''} />
+          <img src={pictureSrc(it.picture)} alt={it.picture?.alt ?? ''} {...pictureSize(it.picture)} loading="lazy" decoding="async" />
         </div>,
         <div className={d.textClass}>
           <Rich value={it.body} />

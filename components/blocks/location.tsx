@@ -11,7 +11,7 @@ export function LocationDetails({ l, clinicName }: { l: Location; clinicName: st
   const hours = (l.hours ?? '').split('\n').map((x) => x.trim()).filter(Boolean);
   const map = l.latitude != null && l.longitude != null ? `https://www.google.com/maps?q=${l.latitude},${l.longitude}&z=16&output=embed` : null;
   return (
-    <section aria-labelledby="clinic-visit" style={wrap}>
+    <section className="rv-loc" aria-labelledby="clinic-visit" style={wrap}>
       <div style={grid}>
         <div>
           <h2 id="clinic-visit">Visit {clinicName} in {l.name}</h2>

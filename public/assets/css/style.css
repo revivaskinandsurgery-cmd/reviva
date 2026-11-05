@@ -7533,3 +7533,114 @@ body{
 :where(img[width][height]) {
   height: auto;
 }
+
+/* /noida and /ghaziabad: FAQ section (same look as the other pages' FAQ) and a hero that fits the longer H1. */
+.page-noida .faq-section,
+.page-ghaziabad .faq-section{
+    padding:80px 80px;
+    background:#f6f4f1;
+}
+.page-noida .faq-title,
+.page-ghaziabad .faq-title{
+    text-align:center;
+    font-size:48px;
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    color:#322722;
+    margin-bottom:70px;
+}
+.page-noida .faq-wrapper,
+.page-ghaziabad .faq-wrapper{
+    max-width:850px;
+    margin:auto;
+}
+.page-noida .faq-item,
+.page-ghaziabad .faq-item{
+    border-bottom:1px solid #ddd3c8;
+}
+.page-noida .faq-question,
+.page-ghaziabad .faq-question{
+    width:100%;
+    background:none;
+    border:none;
+    outline:none;
+    padding:28px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    color:#3b2f29;
+    font-size:16px;
+    font-weight:500;
+    font-family:inherit;
+    text-align:left;
+}
+.page-noida .faq-question span,
+.page-ghaziabad .faq-question span{
+    color:#d7ac63;
+    font-size:28px;
+    font-weight:300;
+}
+.page-noida .faq-answer,
+.page-ghaziabad .faq-answer{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.4s ease;
+}
+.page-noida .faq-answer p,
+.page-ghaziabad .faq-answer p{
+    padding-bottom:26px;
+    color:#756963;
+    line-height:1.9;
+    font-size:15px;
+}
+.page-noida .reviva-noida-sanctuary,
+.page-ghaziabad .reviva-noida-sanctuary{
+    padding-top:160px;
+}
+.page-noida .reviva-noida-title,
+.page-ghaziabad .reviva-noida-title{
+    font-size:54px;
+}
+@media(max-width:768px){
+    .page-noida .faq-section,
+    .page-ghaziabad .faq-section{
+        padding:40px 24px;
+    }
+    .page-noida .faq-title,
+    .page-ghaziabad .faq-title{
+        font-size:32px;
+        margin-bottom:36px;
+    }
+    .page-noida .reviva-noida-sanctuary,
+    .page-ghaziabad .reviva-noida-sanctuary{
+        padding-top:130px;
+    }
+}
+
+/* Address / hours / map block on /noida and /ghaziabad (components/blocks/location.tsx). */
+.rv-loc a{
+    color:#97702b;
+    text-decoration:underline;
+    text-underline-offset:3px;
+}
+.rv-loc h2{
+    font-family:Georgia, "Times New Roman", serif;
+    font-weight:400;
+    color:#342820;
+    font-size:clamp(26px, 3vw, 36px);
+    margin:0 0 12px;
+}
+.rv-loc h3{
+    font-family:Georgia, "Times New Roman", serif;
+    font-weight:400;
+    color:#342820;
+    font-size:22px;
+}
+@media(max-width:768px){
+    .page-noida .reviva-noida-sanctuary,
+    .page-ghaziabad .reviva-noida-sanctuary{
+        padding-left:24px;
+        padding-right:24px;
+    }
+}
